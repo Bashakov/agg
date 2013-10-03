@@ -19,11 +19,13 @@
 
 enum flip_y_e { flip = true };
 
-typedef char char_type;
+typedef WCHAR char_type;
 
 static char_type text[] = 
 //"0123456789ABCDEFGHIJKLMNOPRSTUVWXYZabcdefghijklmnoprstuvwxyz "
-" Anti-Grain Geometry is designed as a set of loosely coupled "
+L"ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏĞÑÒÓÔÕÖ×ØÙÚŞÜİŞßàáâãäå¸æçèéêëìíîïğñòóôõö÷øùúşüışÿ"; 
+
+LPCSTR A = " Anti-Grain Geometry is designed as a set of loosely coupled "
 "algorithms and class templates united with a common idea, "
 "so that all the components can be easily combined. Also, "
 "the template based design allows you to replace any part of "
@@ -274,6 +276,7 @@ public:
         if(m_feng.create_font("Arial", gren))
         {
             m_fman.precache(' ', 127);
+			m_fman.precache((BYTE)'À', (BYTE)'Á');
 
             double x = 10.0;
             double y0 = height() - m_height.value() - 10.0;

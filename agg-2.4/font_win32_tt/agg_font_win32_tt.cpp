@@ -382,7 +382,7 @@ namespace agg
         m_width(0),
         m_weight(FW_REGULAR),
         m_italic(false),
-        m_char_set(DEFAULT_CHARSET),
+        m_char_set(RUSSIAN_CHARSET /*DEFAULT_CHARSET*/),
         m_pitch_and_family(FF_DONTCARE),
         m_hinting(true),
         m_flip_y(false),

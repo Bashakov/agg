@@ -154,7 +154,6 @@ namespace svg
     void path_renderer::curve4(double x2, double y2,                   // S, s
                                double x,  double y, bool rel)
     {
-        //throw exception("curve4(x2, y2, x, y) : NOT IMPLEMENTED YET");
         if(rel) 
         {
             m_storage.curve4_rel(x2, y2, x, y);
@@ -165,6 +164,23 @@ namespace svg
     }
 
     //------------------------------------------------------------------------
+	void path_renderer::arc(double rx, double ry,
+		double angle,
+		bool large_arc_flag,
+		bool sweep_flag,
+		double x, double y, bool rel)
+	{
+		angle = deg2rad (angle);
+		if(rel)
+		{
+			m_storage.arc_rel(rx, ry, angle, large_arc_flag, sweep_flag, x, y);
+		} else
+		{
+			m_storage.arc_to(rx, ry, angle, large_arc_flag, sweep_flag, x, y);
+		}
+	}
+
+	//------------------------------------------------------------------------
     void path_renderer::close_subpath()
     {
         m_storage.end_poly(path_flags_close);
@@ -338,7 +354,14 @@ namespace svg
                     break;
 
                 case 'A': case 'a':
-                    throw exception("parse_path: Command A: NOT IMPLEMENTED YET");
+				arg[0] = tok.last_number();
+				for(i = 1; i < 7; ++i)
+				{
+					arg[i] = tok.next(cmd);
+				}
+				arc(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6],
+					cmd == 'a');
+				break;
 
                 case 'Z': case 'z':
                     close_subpath();
@@ -356,4 +379,3 @@ namespace svg
 
 }
 }
-
