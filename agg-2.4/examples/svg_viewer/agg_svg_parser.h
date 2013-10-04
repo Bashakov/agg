@@ -34,6 +34,7 @@ namespace svg
 		struct text
 		{
 			double	x, y, h;
+			const char * ff;
 			bool	flag;
 		};
     public:

@@ -673,8 +673,6 @@ namespace agg
         void end_poly(unsigned flags = path_flags_close);
         void close_polygon(unsigned flags = path_flags_none);
 
-		void text(double x, double y, double height, double width, const char * text, int len); 
-
         // Accessors
         //--------------------------------------------------------------------
         const container_type& vertices() const { return m_vertices; } 
@@ -985,21 +983,21 @@ namespace agg
         }
     }
 
-	//------------------------------------------------------------------------
-	template<class VC> 
-	void path_base<VC>::text(double x, double y, double height, double width, const char * text, int len)
-	{
-		agg::gsv_text t;
-		t.size(height, width);
-		t.flip(true);
-		t.start_point(x, y);
-		t.text(text, len);
-		concat_path(t);
-
-// 		agg::conv_stroke<agg::gsv_text> pt(t);
-// 		pt.width(10.0);
+// 	//------------------------------------------------------------------------
+// 	template<class VC> 
+// 	void path_base<VC>::text(double x, double y, double height, double width, const char * text, int len)
+// 	{
+// 		agg::gsv_text t;
+// 		t.size(height, width);
+// 		t.flip(true);
+// 		t.start_point(x, y);
+// 		t.text(text, len);
+// 		//concat_path(t);
+// 
+//  		agg::conv_stroke<agg::gsv_text> pt(t);
+//  		pt.width(height / 10.0);
 // 		concat_path(pt);
-	}
+// 	}
     //------------------------------------------------------------------------
     template<class VC> 
     void path_base<VC>::arc_rel(double rx, double ry,

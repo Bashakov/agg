@@ -34,7 +34,7 @@ void DbgOut(const char* szFormat, ...)
 	_vsnprintf(szBuff, sizeof(szBuff), szFormat, arg);
 	va_end(arg);
 
-	OutputDebugString(szBuff);
+	OutputDebugStringA(szBuff);
 };
 
 namespace agg
@@ -65,7 +65,7 @@ namespace agg
     //------------------------------------------------------------------------
     void vcgen_stroke::add_vertex(double x, double y, unsigned cmd)
     {
-		DbgOut("vcgen_stroke::add_vertex x=%.2lf y=%.2lf  cmd=%d\n", x, y, cmd);
+		//DbgOut("vcgen_stroke::add_vertex x=%.2lf y=%.2lf  cmd=%d\n", x, y, cmd);
         m_status = initial;
         if(is_move_to(cmd))
         {

@@ -21,13 +21,14 @@
 #include <string.h>
 #include <ctype.h>
 #include "agg_svg_parser.h"
-#include "agg_gsv_text.h"
 #include "expat.h"
 
 namespace agg
 {
 namespace svg
 {
+	namespace
+	{
     struct named_color
     {
         char  name[22];
@@ -185,7 +186,7 @@ namespace svg
         { "yellowgreen",154,205,50, 255 },
         { "zzzzzzzzzzz",0,0,0, 0 }
     }; 
-
+}
 
     //------------------------------------------------------------------------
     parser::~parser()
@@ -822,6 +823,8 @@ namespace svg
 		m_text.x = 0.0;
 		m_text.y = 0.0;
 		m_text.h =10.0;
+		m_text.ff = NULL;
+
 
 		m_path.begin_path();
 		for(int i = 0; attr[i]; i += 2)
@@ -831,6 +834,8 @@ namespace svg
 				if(strcmp(attr[i], "x") == 0)			m_text.x = parse_double(attr[i + 1]);
 				if(strcmp(attr[i], "y") == 0)			m_text.y = parse_double(attr[i + 1]);
 				if(strcmp(attr[i], "font-size") == 0)	m_text.h = parse_double(attr[i + 1]);
+				if(strcmp(attr[i], "font-family") == 0)	m_text.ff = attr[i + 1];
+				
 			}
 		}
 		m_text.flag = true;
@@ -838,7 +843,16 @@ namespace svg
 
 	void parser::parse_text_content(const char* s, int len)
 	{
-		m_path.text(m_text.x, m_text.y, m_text.h, 0.0, s, len);
+		agg::gsv_text t;
+		t.size(m_text.h);
+		t.flip(true);
+		t.start_point(m_text.x, m_text.y);
+		t.text(s, len);
+
+		agg::conv_stroke<agg::gsv_text> pt(t);
+		pt.width(m_text.h / 10.0);
+		m_path.concat_path(pt);
+
 		m_path.end_path();
 		m_text.flag = false;
 	}

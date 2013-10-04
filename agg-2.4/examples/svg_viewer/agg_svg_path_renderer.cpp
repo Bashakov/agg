@@ -182,12 +182,6 @@ namespace svg
 	}
 
 	//------------------------------------------------------------------------
-	void path_renderer::text(double x, double y, double height, double width, const char * text, int len)
-	{
-		m_storage.text(x, y, height, width, text, len);
-	}
-
-	//------------------------------------------------------------------------
     void path_renderer::close_subpath()
     {
         m_storage.end_poly(path_flags_close);

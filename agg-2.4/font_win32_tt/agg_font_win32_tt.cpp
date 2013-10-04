@@ -18,11 +18,6 @@
 #include "agg_bitset_iterator.h"
 #include "agg_renderer_scanline.h"
 
-// #ifdef AGG_WIN9X_COMPLIANT
-// #define GetGlyphOutlineX GetGlyphOutline
-// #else
-// #define GetGlyphOutlineX GetGlyphOutlineW
-// #endif
 
 namespace agg
 {

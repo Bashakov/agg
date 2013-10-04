@@ -170,14 +170,12 @@ namespace svg
 					bool rel=false);
         void close_subpath();                               // Z, z
 
-		void text(double x, double y, double height, double width, const char * text, int len); 
-// 		template<class VertexSource>
-// 			void add_path(VertexSource& vs,
-// 			unsigned path_id = 0,
-// 			bool solid_path = true)
-// 		{
-// 			m_storage.add_path(vs, path_id, solid_path);
-// 		}
+		//void text(double x, double y, double height, double width, const char * text, int len); 
+
+		template<class VertexSource> void concat_path(VertexSource& vs, unsigned path_id = 0)
+		{
+			m_storage.concat_path(vs, path_id);
+		}
 
 
         unsigned vertex_count() const { return m_curved_count.count(); }

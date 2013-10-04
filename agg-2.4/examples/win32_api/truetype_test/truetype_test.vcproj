@@ -4,6 +4,7 @@
 	Version="9,00"
 	Name="truetype_test"
 	ProjectGUID="{70FBC271-D313-4E9F-BA91-90C3992EE96B}"
+	RootNamespace="truetype_test"
 	TargetFrameworkVersion="0"
 	>
 	<Platforms>
@@ -22,6 +23,7 @@
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
+			CharacterSet="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
