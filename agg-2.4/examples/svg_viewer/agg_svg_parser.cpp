@@ -450,7 +450,7 @@ namespace svg
 				{
 					throw exception("parse_color: false on '%s'", str);
 				}
-				a = (a < 1.0)? ((a > 0.0)? a: 0.0): 1.0;
+				a = (a < 1.0f)? ((a > 0.0f)? a: 0.0f): 1.0f;
 				return rgba8(r, g, b, (int8u)(255 * a));
 			}
         else
@@ -822,12 +822,7 @@ namespace svg
 					if(strcmp(attr[i], "y") == 0) y = parse_double(attr[i + 1]);
 				}
 			}
-
-			m_path.move_to(x, y);
-			m_path.text("test!!!");
-			m_path.close_subpath();
-
-
+			m_path.text("-----");
 			m_path.end_path();
 		}
 

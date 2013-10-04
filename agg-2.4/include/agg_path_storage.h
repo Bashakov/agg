@@ -989,13 +989,16 @@ namespace agg
 	template<class VC> 
 	void path_base<VC>::text(const char * strText)
 	{
-		if(m_vertices.total_vertices() && is_vertex(m_vertices.last_command()))
-		{
-			gsv_text text;
-			text.text(strText);
-			conv_stroke<gsv_text> text_poly(text);
-			join_path(text_poly);
-		}
+		agg::gsv_text t;
+		t.size(100.0);
+		t.flip(true);
+		t.start_point(200.0, 150.0);
+		t.text("1 2");
+
+		concat_path(t);
+// 		agg::conv_stroke<agg::gsv_text> pt(t);
+// 		pt.width(10.0);
+// 		concat_path(pt);
 	}
     //------------------------------------------------------------------------
     template<class VC> 

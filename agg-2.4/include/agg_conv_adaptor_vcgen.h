@@ -80,10 +80,6 @@ namespace agg
         double        m_start_y;
     };
 
-
-
-
-
     //------------------------------------------------------------------------
     template<class VertexSource, class Generator, class Markers> 
     unsigned conv_adaptor_vcgen<VertexSource, Generator, Markers>::vertex(double* x, double* y)

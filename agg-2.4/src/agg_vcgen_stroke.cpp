@@ -20,6 +20,23 @@
 #include "agg_vcgen_stroke.h"
 #include "agg_shorten_path.h"
 
+#include <stdarg.h>
+#include <stdio.h>
+//void OutputDebugStringA(const char * lpOutputString);
+#include <Windows.h>
+#pragma comment( lib, "kernel32")
+
+void DbgOut(const char* szFormat, ...)
+{
+	char szBuff[1024];
+	va_list arg;
+	va_start(arg, szFormat);
+	_vsnprintf(szBuff, sizeof(szBuff), szFormat, arg);
+	va_end(arg);
+
+	OutputDebugString(szBuff);
+};
+
 namespace agg
 {
 
@@ -48,6 +65,7 @@ namespace agg
     //------------------------------------------------------------------------
     void vcgen_stroke::add_vertex(double x, double y, unsigned cmd)
     {
+		DbgOut("vcgen_stroke::add_vertex x=%.2lf y=%.2lf  cmd=%d\n", x, y, cmd);
         m_status = initial;
         if(is_move_to(cmd))
         {
