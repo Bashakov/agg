@@ -170,7 +170,7 @@ namespace svg
 					bool rel=false);
         void close_subpath();                               // Z, z
 
-		void text(const char * text); 
+		void text(double x, double y, double height, double width, const char * text, int len); 
 // 		template<class VertexSource>
 // 			void add_path(VertexSource& vs,
 // 			unsigned path_id = 0,

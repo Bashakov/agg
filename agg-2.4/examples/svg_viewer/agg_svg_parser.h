@@ -31,6 +31,11 @@ namespace svg
     class parser
     {
         enum buf_size_e { buf_size = BUFSIZ };
+		struct text
+		{
+			double	x, y, h;
+			bool	flag;
+		};
     public:
 
         ~parser();
@@ -54,7 +59,10 @@ namespace svg
         void parse_line(const char** attr);
         void parse_style(const char* str);
         void parse_transform(const char* str);
-			void parse_text(const char** attr);
+		
+		void parse_text_start(const char** attr);
+		void parse_text_content(const char* s, int len);
+		void parse_text_end();
 
         unsigned parse_matrix(const char* str);
         unsigned parse_translate(const char* str);
@@ -80,6 +88,7 @@ namespace svg
         char*          m_attr_value;
         unsigned       m_attr_name_len;
         unsigned       m_attr_value_len;
+		text           m_text;
     };
 
 }

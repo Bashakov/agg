@@ -563,7 +563,7 @@ namespace agg
     }
 
     //-------------------------------------------------------------------------
-    void gsv_text::text(const char* text)
+    void gsv_text::text(const char* text, int len)
     {
         if(text == 0)
         {
@@ -571,12 +571,12 @@ namespace agg
             m_text = m_chr;
             return;
         }
-        unsigned new_size = strlen(text) + 1;
+		unsigned new_size = len? len: strlen(text);
         if(new_size > m_text_buf.size())
-        {
-            m_text_buf.resize(new_size);
-        }
+            m_text_buf.resize(new_size + 1);
+
         memcpy(&m_text_buf[0], text, new_size);
+		m_text_buf[new_size] = 0;
         m_text = &m_text_buf[0];
     }
 

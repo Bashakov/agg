@@ -182,9 +182,9 @@ namespace svg
 	}
 
 	//------------------------------------------------------------------------
-	void path_renderer::text(const char * text)
+	void path_renderer::text(double x, double y, double height, double width, const char * text, int len)
 	{
-		m_storage.text(text);
+		m_storage.text(x, y, height, width, text, len);
 	}
 
 	//------------------------------------------------------------------------
