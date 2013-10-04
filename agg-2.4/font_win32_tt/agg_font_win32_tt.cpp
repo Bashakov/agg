@@ -18,11 +18,11 @@
 #include "agg_bitset_iterator.h"
 #include "agg_renderer_scanline.h"
 
-#ifdef AGG_WIN9X_COMPLIANT
-#define GetGlyphOutlineX GetGlyphOutline
-#else
-#define GetGlyphOutlineX GetGlyphOutlineW
-#endif
+// #ifdef AGG_WIN9X_COMPLIANT
+// #define GetGlyphOutlineX GetGlyphOutline
+// #else
+// #define GetGlyphOutlineX GetGlyphOutlineW
+// #endif
 
 namespace agg
 {
@@ -622,7 +622,7 @@ namespace agg
             if(!m_hinting) format |= GGO_UNHINTED;
         
             GLYPHMETRICS gm;
-            int total_size = GetGlyphOutlineX(m_dc,
+            int total_size = GetGlyphOutline(m_dc,
                                               glyph_code,
                                               format,
                                               &gm,
@@ -637,7 +637,7 @@ namespace agg
                 // It doesn't even initialize the glyph metrics
                 // structure. So, we have to query the metrics
                 // separately (basically we need gmCellIncX).
-                int total_size = GetGlyphOutlineX(m_dc,
+                int total_size = GetGlyphOutline(m_dc,
                                                   glyph_code,
                                                   GGO_METRICS,
                                                   &gm,

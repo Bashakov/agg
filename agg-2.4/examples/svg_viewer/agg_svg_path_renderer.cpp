@@ -174,10 +174,17 @@ namespace svg
 		if(rel)
 		{
 			m_storage.arc_rel(rx, ry, angle, large_arc_flag, sweep_flag, x, y);
-		} else
+		}
+		else
 		{
 			m_storage.arc_to(rx, ry, angle, large_arc_flag, sweep_flag, x, y);
 		}
+	}
+
+	//------------------------------------------------------------------------
+	void path_renderer::text(const char * text)
+	{
+		m_storage.text(text);
 	}
 
 	//------------------------------------------------------------------------
@@ -359,8 +366,7 @@ namespace svg
 				{
 					arg[i] = tok.next(cmd);
 				}
-				arc(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6],
-					cmd == 'a');
+				arc(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6], cmd == 'a');
 				break;
 
                 case 'Z': case 'z':

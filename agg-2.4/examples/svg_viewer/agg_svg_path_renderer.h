@@ -165,18 +165,19 @@ namespace svg
                     double x,  double y, bool rel=false);
         void curve4(double x2, double y2,                   // S, s
                     double x,  double y, bool rel=false);
-			void arc(double rx, double ry, double angle, // A, a
-				bool large_arc_flag, bool sweep_flag, double x, double y,
-				bool rel=false);
+		void arc(double rx, double ry, double angle, // A, a
+					bool large_arc_flag, bool sweep_flag, double x, double y,
+					bool rel=false);
         void close_subpath();                               // Z, z
 
-			template<class VertexSource>
-				void add_path(VertexSource& vs,
-				unsigned path_id = 0,
-				bool solid_path = true)
-			{
-				m_storage.add_path(vs, path_id, solid_path);
-			}
+		void text(const char * text); 
+// 		template<class VertexSource>
+// 			void add_path(VertexSource& vs,
+// 			unsigned path_id = 0,
+// 			bool solid_path = true)
+// 		{
+// 			m_storage.add_path(vs, path_id, solid_path);
+// 		}
 
 
         unsigned vertex_count() const { return m_curved_count.count(); }

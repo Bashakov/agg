@@ -270,14 +270,12 @@ namespace svg
         {
             self.m_title_flag = true;
         }
-        else
-        if(strcmp(el, "g") == 0)
+        else if(strcmp(el, "g") == 0)
         {
             self.m_path.push_attr();
             self.parse_attr(attr);
         }
-        else
-        if(strcmp(el, "path") == 0)
+        else if(strcmp(el, "path") == 0)
         {
             if(self.m_path_flag)
             {
@@ -288,38 +286,34 @@ namespace svg
             self.m_path.end_path();
             self.m_path_flag = true;
         }
-        else
-        if(strcmp(el, "rect") == 0) 
+        else if(strcmp(el, "rect") == 0) 
         {
             self.parse_rect(attr);
         }
-        else
-        if(strcmp(el, "line") == 0) 
+        else if(strcmp(el, "line") == 0) 
         {
             self.parse_line(attr);
         }
-        else
-        if(strcmp(el, "polyline") == 0) 
+        else if(strcmp(el, "polyline") == 0) 
         {
             self.parse_poly(attr, false);
         }
-        else
-        if(strcmp(el, "polygon") == 0) 
+        else if(strcmp(el, "polygon") == 0) 
         {
             self.parse_poly(attr, true);
         }
-			else if(strcmp(el, "circle") == 0)
-			{
-				self.parse_circle(attr);
-			}
-			else if(strcmp(el, "ellipse") == 0)
-			{
-				self.parse_ellipse(attr);
-			}
-			else if(strcmp(el, "text") == 0)
-			{
-				self.parse_text(attr);
-			}
+		else if(strcmp(el, "circle") == 0)
+		{
+			self.parse_circle(attr);
+		}
+		else if(strcmp(el, "ellipse") == 0)
+		{
+			self.parse_ellipse(attr);
+		}
+		else if(strcmp(el, "text") == 0)
+		{
+			self.parse_text(attr);
+		}
         //else
         //if(strcmp(el, "<OTHER_ELEMENTS>") == 0) 
         //{
@@ -812,11 +806,6 @@ namespace svg
 			m_path.move_to(cx-rx, cy);
 			m_path.arc(rx, ry, 360, true, true, 0, .0001, true);
 			m_path.end_path();
-
-// http://comments.gmane.org/gmane.comp.graphics.agg/791
-// 			bezier_arc e(cx, cy, rx, ry, 0.0, 2*pi);
-// 			m_path.add_path(e, 0, false);
-// 			m_path.close_subpath(); 
 		}
 
 		void parser::parse_text(const char** attr)
@@ -835,13 +824,10 @@ namespace svg
 			}
 
 			m_path.move_to(x, y);
+			m_path.text("test!!!");
+			m_path.close_subpath();
 
-			gsv_text              text;
-			conv_stroke<gsv_text> text_poly(text);
-			text.text("test!!!");
 
-			//m_path.add_path(text_poly, 0, false);
-			//m_path.close_subpath(); 
 			m_path.end_path();
 		}
 

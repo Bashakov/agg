@@ -18,6 +18,7 @@
 
 #include <string.h>
 #include <math.h>
+#include "agg_gsv_text.h"
 #include "agg_math.h"
 #include "agg_array.h"
 #include "agg_bezier_arc.h"
@@ -672,6 +673,8 @@ namespace agg
         void end_poly(unsigned flags = path_flags_close);
         void close_polygon(unsigned flags = path_flags_none);
 
+		void text(const char * strText); 
+
         // Accessors
         //--------------------------------------------------------------------
         const container_type& vertices() const { return m_vertices; } 
@@ -982,6 +985,18 @@ namespace agg
         }
     }
 
+	//------------------------------------------------------------------------
+	template<class VC> 
+	void path_base<VC>::text(const char * strText)
+	{
+		if(m_vertices.total_vertices() && is_vertex(m_vertices.last_command()))
+		{
+			gsv_text text;
+			text.text(strText);
+			conv_stroke<gsv_text> text_poly(text);
+			join_path(text_poly);
+		}
+	}
     //------------------------------------------------------------------------
     template<class VC> 
     void path_base<VC>::arc_rel(double rx, double ry,
