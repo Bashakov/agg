@@ -20,10 +20,10 @@ class the_application : public agg::platform_support
 {
     agg::svg::path_renderer m_path;
 
-    agg::slider_ctrl<color_type> m_expand;
-    agg::slider_ctrl<color_type> m_gamma;
-    agg::slider_ctrl<color_type> m_scale;
-    agg::slider_ctrl<color_type> m_rotate;
+//     agg::slider_ctrl<color_type> m_expand;
+//     agg::slider_ctrl<color_type> m_gamma;
+//     agg::slider_ctrl<color_type> m_scale;
+//     agg::slider_ctrl<color_type> m_rotate;
 
     double m_min_x;
     double m_min_y;
@@ -41,10 +41,10 @@ public:
     the_application(agg::pix_format_e format, bool flip_y) :
         agg::platform_support(format, flip_y),
         m_path(),
-        m_expand(5,     5,    256-5, 11,    !flip_y),
-        m_gamma (5,     5+15, 256-5, 11+15, !flip_y),
-        m_scale (256+5, 5,    512-5, 11,    !flip_y),
-        m_rotate(256+5, 5+15, 512-5, 11+15, !flip_y),
+//         m_expand(5,     5,    256-5, 11,    !flip_y),
+//         m_gamma (5,     5+15, 256-5, 11+15, !flip_y),
+//         m_scale (256+5, 5,    512-5, 11,    !flip_y),
+//         m_rotate(256+5, 5+15, 512-5, 11+15, !flip_y),
         m_min_x(0.0),
         m_min_y(0.0),
         m_max_x(0.0),
@@ -55,26 +55,26 @@ public:
         m_dy(0.0),
         m_drag_flag(false)
     {
-        add_ctrl(m_expand);
-        add_ctrl(m_gamma);
-        add_ctrl(m_scale);
-        add_ctrl(m_rotate);
+//         add_ctrl(m_expand);
+//         add_ctrl(m_gamma);
+//         add_ctrl(m_scale);
+//         add_ctrl(m_rotate);
 
-        m_expand.label("Expand=%3.2f");
-        m_expand.range(-1, 1.2);
-        m_expand.value(0.0);
-
-        m_gamma.label("Gamma=%3.2f");
-        m_gamma.range(0.0, 3.0);
-        m_gamma.value(1.0);
-
-        m_scale.label("Scale=%3.2f");
-        m_scale.range(0.2, 10.0);
-        m_scale.value(1.0);
-
-        m_rotate.label("Rotate=%3.2f");
-        m_rotate.range(-180.0, 180.0);
-        m_rotate.value(0.0);
+//         m_expand.label("Expand=%3.2f");
+//         m_expand.range(-1, 1.2);
+//         m_expand.value(0.0);
+// 
+//         m_gamma.label("Gamma=%3.2f");
+//         m_gamma.range(0.0, 3.0);
+//         m_gamma.value(1.0);
+// 
+//         m_scale.label("Scale=%3.2f");
+//         m_scale.range(0.2, 10.0);
+//         m_scale.value(1.0);
+// 
+//         m_rotate.label("Rotate=%3.2f");
+//         m_rotate.range(-180.0, 180.0);
+//         m_rotate.value(0.0);
     }
 
     void parse_svg(const char* fname)
@@ -106,41 +106,42 @@ public:
         agg::scanline_p8 sl;
         agg::trans_affine mtx;
 
-        ras.gamma(agg::gamma_power(m_gamma.value()));
-        mtx *= agg::trans_affine_translation((m_min_x + m_max_x) * -0.5, (m_min_y + m_max_y) * -0.5);
-        mtx *= agg::trans_affine_scaling(m_scale.value());
-        mtx *= agg::trans_affine_rotation(agg::deg2rad(m_rotate.value()));
-        mtx *= agg::trans_affine_translation((m_min_x + m_max_x) * 0.5 + m_x, (m_min_y + m_max_y) * 0.5 + m_y + 30);
+//         ras.gamma(agg::gamma_power(m_gamma.value()));
+//         mtx *= agg::trans_affine_translation((m_min_x + m_max_x) * -0.5, (m_min_y + m_max_y) * -0.5);
+//         mtx *= agg::trans_affine_scaling(m_scale.value());
+//         mtx *= agg::trans_affine_rotation(agg::deg2rad(m_rotate.value()));
+//         mtx *= agg::trans_affine_translation((m_min_x + m_max_x) * 0.5 + m_x, (m_min_y + m_max_y) * 0.5 + m_y + 30);
         
-        m_path.expand(m_expand.value());
+       // m_path.expand(m_expand.value());
         start_timer();
+		m_path.expand(0.0);
         m_path.render(ras, sl, ren, mtx, rb.clip_box(), 1.0);
         double tm = elapsed_time();
         unsigned vertex_count = m_path.vertex_count();
 
         ras.gamma(agg::gamma_none());
-        agg::render_ctrl(ras, sl, rb, m_expand);
-        agg::render_ctrl(ras, sl, rb, m_gamma);
-        agg::render_ctrl(ras, sl, rb, m_scale);
-        agg::render_ctrl(ras, sl, rb, m_rotate);
+       // agg::render_ctrl(ras, sl, rb, m_expand);
+       // agg::render_ctrl(ras, sl, rb, m_gamma);
+        //agg::render_ctrl(ras, sl, rb, m_scale);
+       // agg::render_ctrl(ras, sl, rb, m_rotate);
 
+		if(1)
+		{
+			char buf[128]; 
+			sprintf(buf, "Vertices=%d Time=%.3f ms", vertex_count, tm);
 
-        char buf[128]; 
-        agg::gsv_text t;
-        t.size(10.0);
-        t.flip(true);
+			agg::gsv_text t;
+			t.size(10.0);
+			t.flip(true);
+			t.start_point(10.0, 40.0);
+			t.text(buf);
 
-        agg::conv_stroke<agg::gsv_text> pt(t);
-        pt.width(1.5);
-
-        sprintf(buf, "Vertices=%d Time=%.3f ms", vertex_count, tm);
-
-        t.start_point(10.0, 40.0);
-        t.text(buf);
-
-        ras.add_path(pt);
-        ren.color(agg::rgba(0,0,0));
-        agg::render_scanlines(ras, sl, ren);
+			agg::conv_stroke<agg::gsv_text> pt(t);
+			pt.width(1.5);
+			ras.add_path(pt);
+			ren.color(agg::rgba(0,0,0));
+			agg::render_scanlines(ras, sl, ren);
+		}
 
 
         //agg::gamma_lut<> gl(m_gamma.value());
@@ -194,8 +195,8 @@ public:
 
             agg::trans_affine mtx;
             mtx *= agg::trans_affine_translation((m_min_x + m_max_x) * -0.5, (m_min_y + m_max_y) * -0.5);
-            mtx *= agg::trans_affine_scaling(m_scale.value());
-            mtx *= agg::trans_affine_rotation(agg::deg2rad(m_rotate.value()));
+//             mtx *= agg::trans_affine_scaling(m_scale.value());
+//             mtx *= agg::trans_affine_rotation(agg::deg2rad(m_rotate.value()));
             mtx *= agg::trans_affine_translation((m_min_x + m_max_x) * 0.5, (m_min_y + m_max_y) * 0.5);
             mtx *= agg::trans_affine_translation(m_x, m_y);
 
