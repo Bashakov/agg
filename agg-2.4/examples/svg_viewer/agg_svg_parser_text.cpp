@@ -22,8 +22,6 @@ namespace svg
 		: m_path(path)
 		, m_feng(GetDC(NULL))
 		, m_fman(m_feng)
-		, m_curves(m_fman.path_adaptor())
-		, m_contour(m_curves)
 	{
 		m_text.init(false);
 		m_feng.gamma(agg::gamma_none());
@@ -38,8 +36,6 @@ namespace svg
 
 	void parser_text::parse_attr(const char* name, const char* value)
 	{
-		m_path.begin_path();
-
 		if(strcmp(name, "x") == 0)				m_text.x = parse_double(value);
 		if(strcmp(name, "y") == 0)				m_text.y = parse_double(value);
 		if(strcmp(name, "font-size") == 0)		m_text.width = m_text.height = parse_double(value);
@@ -52,9 +48,7 @@ namespace svg
 		m_feng.width((m_text.width == m_text.height) ? 0.0 : m_text.width / 2.4);
 		m_feng.flip_y(true);
 		
-		m_contour.width( -m_text.weight * m_text.height * 0.05);
-
-		if( m_feng.create_font(m_text.family, m_text.gren) )
+		if(1 && m_feng.create_font(m_text.family, m_text.gren) )
 		{
 			double x = m_text.x;
 			double y = m_text.y;
@@ -81,16 +75,30 @@ namespace svg
 					break;
 
 				case agg::glyph_data_outline:
-					if(1 && fabs(m_text.weight) <= 0.01)
 					{
-						// For the sake of efficiency skip the
-						// contour converter if the weight is about zero.
-						//-----------------------
-						m_path.concat_path(m_curves);
-					}
-					else
-					{
-						m_path.concat_path(m_contour);
+						// Pipeline to process the vectors glyph paths (curves + contour)
+						 typedef conv_curve<font_manager_type::path_adaptor_type> conv_curve_type;
+						// typedef conv_contour<conv_curve_type>			conv_contour_type;
+
+						conv_curve_type		curves(m_fman.path_adaptor());
+						//conv_contour_type	contour(curves);
+
+						//contour.width( -m_text.weight * m_text.height * 0.05);
+						
+						m_path.concat_path( curves );
+						//m_path.concat_path( m_fman.path_adaptor() );
+
+	// 					if(fabs(m_text.weight) <= 0.01)
+	// 					{
+	// 						// For the sake of efficiency skip the
+	// 						// contour converter if the weight is about zero.
+	// 						//-----------------------
+	// 						m_path.concat_path(m_curves);
+	// 					}
+	// 					else
+	// 					{
+	// 						m_path.concat_path(m_contour);
+	// 					}
 					}
 					break;
 				}
@@ -114,7 +122,6 @@ namespace svg
 		}
 
 		m_text.in_tag = false;
-		m_path.end_path();
 	}
 
 	void parser_text::text_end()

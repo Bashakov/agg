@@ -106,13 +106,6 @@ public:
         agg::scanline_p8 sl;
         agg::trans_affine mtx;
 
-//         ras.gamma(agg::gamma_power(m_gamma.value()));
-//         mtx *= agg::trans_affine_translation((m_min_x + m_max_x) * -0.5, (m_min_y + m_max_y) * -0.5);
-//         mtx *= agg::trans_affine_scaling(m_scale.value());
-//         mtx *= agg::trans_affine_rotation(agg::deg2rad(m_rotate.value()));
-//         mtx *= agg::trans_affine_translation((m_min_x + m_max_x) * 0.5 + m_x, (m_min_y + m_max_y) * 0.5 + m_y + 30);
-        
-       // m_path.expand(m_expand.value());
         start_timer();
 		m_path.expand(0.0);
         m_path.render(ras, sl, ren, mtx, rb.clip_box(), 1.0);
@@ -120,10 +113,6 @@ public:
         unsigned vertex_count = m_path.vertex_count();
 
         ras.gamma(agg::gamma_none());
-       // agg::render_ctrl(ras, sl, rb, m_expand);
-       // agg::render_ctrl(ras, sl, rb, m_gamma);
-        //agg::render_ctrl(ras, sl, rb, m_scale);
-       // agg::render_ctrl(ras, sl, rb, m_rotate);
 
 		if(0)
 		{

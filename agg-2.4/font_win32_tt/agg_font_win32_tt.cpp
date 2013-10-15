@@ -589,8 +589,21 @@ namespace agg
         }
     }
 
+	template<class ScanLineType>
+	static rect_i GetScanLineBounds(const ScanLineType & scanLine)
+	{
+		rect_i r(scanLine.min_x(), scanLine.min_y(), scanLine.max_x() + 1, scanLine.max_y() + 1);
+		return r;
+	}
 
-
+	template<class PathType>
+	static rect_i GetPathBounds(const PathType & path)
+	{
+		rect_d bnd  = path.bounding_rect();
+		rect_i r(int(floor(bnd.x1)), int(floor(bnd.y1)), int(ceil(bnd.x2)), int(ceil(bnd.y2)));
+		return r;
+	}
+	
     //------------------------------------------------------------------------
     bool font_engine_win32_tt_base::prepare_glyph(unsigned glyph_code)
     {
@@ -617,30 +630,15 @@ namespace agg
             if(!m_hinting) format |= GGO_UNHINTED;
         
             GLYPHMETRICS gm;
-            int total_size = GetGlyphOutline(m_dc,
-                                              glyph_code,
-                                              format,
-                                              &gm,
-                                              buf_size,
-                                              (void*)m_gbuf,
-                                              &m_matrix);
+            int total_size = GetGlyphOutline(m_dc, glyph_code, format, &gm, buf_size, (void*)m_gbuf, &m_matrix);
 
             if(total_size < 0) 
             {
-                // GetGlyphOutline() fails when being called for
-                // GGO_GRAY8_BITMAP and white space (stupid Microsoft).
-                // It doesn't even initialize the glyph metrics
-                // structure. So, we have to query the metrics
-                // separately (basically we need gmCellIncX).
-                int total_size = GetGlyphOutline(m_dc,
-                                                  glyph_code,
-                                                  GGO_METRICS,
-                                                  &gm,
-                                                  buf_size,
-                                                  (void*)m_gbuf,
-                                                  &m_matrix);
-
-                if(total_size < 0) return false;
+                // GetGlyphOutline() fails when being called for GGO_GRAY8_BITMAP and white space (stupid Microsoft).
+                // It doesn't even initialize the glyph metrics structure. So, we have to query the metrics separately (basically we need gmCellIncX).
+                int total_size = GetGlyphOutline(m_dc, glyph_code, GGO_METRICS, &gm, buf_size, (void*)m_gbuf, &m_matrix);
+                if(total_size < 0) 
+					return false;
                 gm.gmBlackBoxX = gm.gmBlackBoxY = 0;
                 total_size = 0;
             }
@@ -652,38 +650,17 @@ namespace agg
             switch(m_glyph_rendering)
             {
             case glyph_ren_native_mono: 
-                decompose_win32_glyph_bitmap_mono(m_gbuf, 
-                                                  gm.gmBlackBoxX,
-                                                  gm.gmBlackBoxY,
-                                                  gm.gmptGlyphOrigin.x,
-                                                  m_flip_y ? -gm.gmptGlyphOrigin.y : 
-                                                              gm.gmptGlyphOrigin.y,
-                                                  m_flip_y,
-                                                  m_scanline_bin,
-                                                  m_scanlines_bin);
-                m_bounds.x1 = m_scanlines_bin.min_x();
-                m_bounds.y1 = m_scanlines_bin.min_y();
-                m_bounds.x2 = m_scanlines_bin.max_x() + 1;
-                m_bounds.y2 = m_scanlines_bin.max_y() + 1;
+                decompose_win32_glyph_bitmap_mono(m_gbuf, gm.gmBlackBoxX, gm.gmBlackBoxY, gm.gmptGlyphOrigin.x, 
+							m_flip_y ? -gm.gmptGlyphOrigin.y : gm.gmptGlyphOrigin.y, m_flip_y, m_scanline_bin, m_scanlines_bin);
+				m_bounds = GetScanLineBounds(m_scanlines_bin);
                 m_data_size = m_scanlines_bin.byte_size(); 
                 m_data_type = glyph_data_mono;
                 return true;
 
             case glyph_ren_native_gray8:
-                decompose_win32_glyph_bitmap_gray8(m_gbuf, 
-                                                   gm.gmBlackBoxX,
-                                                   gm.gmBlackBoxY,
-                                                   gm.gmptGlyphOrigin.x,
-                                                   m_flip_y ? -gm.gmptGlyphOrigin.y : 
-                                                               gm.gmptGlyphOrigin.y,
-                                                   m_flip_y,
-                                                   m_rasterizer,
-                                                   m_scanline_aa,
-                                                   m_scanlines_aa);
-                m_bounds.x1 = m_scanlines_aa.min_x();
-                m_bounds.y1 = m_scanlines_aa.min_y();
-                m_bounds.x2 = m_scanlines_aa.max_x() + 1;
-                m_bounds.y2 = m_scanlines_aa.max_y() + 1;
+                decompose_win32_glyph_bitmap_gray8(m_gbuf, gm.gmBlackBoxX, gm.gmBlackBoxY, gm.gmptGlyphOrigin.x,
+							m_flip_y ? -gm.gmptGlyphOrigin.y : gm.gmptGlyphOrigin.y, m_flip_y, m_rasterizer, m_scanline_aa, m_scanlines_aa);
+				m_bounds = GetScanLineBounds(m_scanlines_aa);
                 m_data_size = m_scanlines_aa.byte_size(); 
                 m_data_type = glyph_data_gray8;
                 return true;
@@ -693,108 +670,61 @@ namespace agg
                 if(m_flag32)
                 {
                     m_path32.remove_all();
-                    if(decompose_win32_glyph_outline(m_gbuf,
-                                                     total_size,
-                                                     m_flip_y, 
-                                                     m_affine,
-                                                     m_path32))
+                    if(decompose_win32_glyph_outline(m_gbuf, total_size, m_flip_y, m_affine, m_path32))
                     {
-                        rect_d bnd  = m_path32.bounding_rect();
+						m_bounds = GetPathBounds(m_path32);
                         m_data_size = m_path32.byte_size();
                         m_data_type = glyph_data_outline;
-                        m_bounds.x1 = int(floor(bnd.x1));
-                        m_bounds.y1 = int(floor(bnd.y1));
-                        m_bounds.x2 = int(ceil(bnd.x2));
-                        m_bounds.y2 = int(ceil(bnd.y2));
                         return true;
                     }
                 }
                 else
                 {
                     m_path16.remove_all();
-                    if(decompose_win32_glyph_outline(m_gbuf,
-                                                     total_size,
-                                                     m_flip_y, 
-                                                     m_affine,
-                                                     m_path16))
+                    if(decompose_win32_glyph_outline(m_gbuf, total_size, m_flip_y, m_affine, m_path16))
                     {
-                        rect_d bnd  = m_path16.bounding_rect();
+						m_bounds = GetPathBounds(m_path16);
                         m_data_size = m_path16.byte_size();
                         m_data_type = glyph_data_outline;
-                        m_bounds.x1 = int(floor(bnd.x1));
-                        m_bounds.y1 = int(floor(bnd.y1));
-                        m_bounds.x2 = int(ceil(bnd.x2));
-                        m_bounds.y2 = int(ceil(bnd.y2));
                         return true;
                     }
                 }
                 break;
 
             case glyph_ren_agg_mono:
+			case glyph_ren_agg_gray8:
                 m_rasterizer.reset();
                 m_affine.transform(&m_advance_x, &m_advance_y);
                 if(m_flag32)
                 {
                     m_path32.remove_all();
-                    decompose_win32_glyph_outline(m_gbuf,
-                                                  total_size,
-                                                  m_flip_y, 
-                                                  m_affine,
-                                                  m_path32);
+                    decompose_win32_glyph_outline(m_gbuf, total_size, m_flip_y, m_affine, m_path32);
                     m_rasterizer.add_path(m_curves32);
                 }
                 else
                 {
                     m_path16.remove_all();
-                    decompose_win32_glyph_outline(m_gbuf,
-                                                  total_size,
-                                                  m_flip_y, 
-                                                  m_affine,
-                                                  m_path16);
+                    decompose_win32_glyph_outline(m_gbuf, total_size, m_flip_y, m_affine, m_path16);
                     m_rasterizer.add_path(m_curves16);
                 }
-                m_scanlines_bin.prepare(); // Remove all 
-                render_scanlines(m_rasterizer, m_scanline_bin, m_scanlines_bin);
-                m_bounds.x1 = m_scanlines_bin.min_x();
-                m_bounds.y1 = m_scanlines_bin.min_y();
-                m_bounds.x2 = m_scanlines_bin.max_x() + 1;
-                m_bounds.y2 = m_scanlines_bin.max_y() + 1;
-                m_data_size = m_scanlines_bin.byte_size(); 
-                m_data_type = glyph_data_mono;
+				if(m_glyph_rendering == glyph_ren_agg_mono)
+				{
+					m_scanlines_bin.prepare(); // Remove all 
+					render_scanlines(m_rasterizer, m_scanline_bin, m_scanlines_bin);
+					m_bounds = GetScanLineBounds(m_scanlines_bin);
+					m_data_size = m_scanlines_bin.byte_size(); 
+					m_data_type = glyph_data_mono;
+				}
+				else
+				{
+					m_scanlines_aa.prepare(); // Remove all 
+					render_scanlines(m_rasterizer, m_scanline_aa, m_scanlines_aa);
+					m_bounds = GetScanLineBounds(m_scanlines_aa);
+					m_data_size = m_scanlines_aa.byte_size(); 
+					m_data_type = glyph_data_gray8;
+				}
                 return true;
 
-            case glyph_ren_agg_gray8:
-                m_rasterizer.reset();
-                m_affine.transform(&m_advance_x, &m_advance_y);
-                if(m_flag32)
-                {
-                    m_path32.remove_all();
-                    decompose_win32_glyph_outline(m_gbuf,
-                                                  total_size,
-                                                  m_flip_y, 
-                                                  m_affine,
-                                                  m_path32);
-                    m_rasterizer.add_path(m_curves32);
-                }
-                else
-                {
-                    m_path16.remove_all();
-                    decompose_win32_glyph_outline(m_gbuf,
-                                                  total_size,
-                                                  m_flip_y, 
-                                                  m_affine,
-                                                  m_path16);
-                    m_rasterizer.add_path(m_curves16);
-                }
-                m_scanlines_aa.prepare(); // Remove all 
-                render_scanlines(m_rasterizer, m_scanline_aa, m_scanlines_aa);
-                m_bounds.x1 = m_scanlines_aa.min_x();
-                m_bounds.y1 = m_scanlines_aa.min_y();
-                m_bounds.x2 = m_scanlines_aa.max_x() + 1;
-                m_bounds.y2 = m_scanlines_aa.max_y() + 1;
-                m_data_size = m_scanlines_aa.byte_size(); 
-                m_data_type = glyph_data_gray8;
-                return true;
             }
         }
         return false;

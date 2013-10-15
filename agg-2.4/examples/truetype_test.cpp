@@ -21,26 +21,46 @@ enum flip_y_e { flip = true };
 
 typedef char char_type;
 
-static char_type text[] = 
-//"0123456789ABCDEFGHIJKLMNOPRSTUVWXYZabcdefghijklmnoprstuvwxyz "
+#if 1
+static char_type text[] = "0";
+#else
+static char_type text[] = "0123456789ABCDEFGHIJKLMNOPRSTUVWXYZabcdefghijklmnoprstuvwxyz "
 "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
-// "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
-// "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
-// "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
-// "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
-// "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
-// "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
-// "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
-// "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
-// "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
-// "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
-// "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
-// "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
-// "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
-// "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
-// "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
-// "ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
-"ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"; 
+"ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
+"ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
+"ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
+"ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
+"ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
+"ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
+"ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
+"ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
+"ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
+"ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
+"ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
+"ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
+"ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
+"ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
+"ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
+"ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
+"ÀÁÂÃÄÅ¨ÆÇÈÉÊËÌÍÎÏÐÑÒÓÔÕÖ×ØÙÚÞÜÝÞ‗אבגדהו¸זחטיךכלםמןנסעףפץצקרשת‏ü‎‏ÿ"
+"algorithms and class templates united with a common idea, "
+"so that all the components can be easily combined. Also, "
+"the template based design allows you to replace any part of "
+"the library without the necessity to modify a single byte in "
+"the existing code. "
+"AGG is designed keeping in mind extensibility and flexibility. "
+"Basically I just wanted to create a toolkit that would allow me "
+"(and anyone else) to add new fancy algorithms very easily. "
+"AGG does not dictate you any style of its use, you are free to "
+"use any part of it. However, AGG is often associated with a tool "
+"for rendering images in memory. That is not quite true, but it can "
+"be a good starting point in studying. The tutorials describe the "
+"use of AGG starting from the low level functionality that deals with "
+"frame buffers and pixels. Then you will gradually understand how to "
+"abstract different parts of the library and how to use them separately. "
+"Remember, the raster picture is often not the only thing you want to "
+"obtain, you will probably want to print your graphics with highest "; 
+#endif
 
 LPCSTR A = " Anti-Grain Geometry is designed as a set of loosely coupled "
 "algorithms and class templates united with a common idea, "
@@ -207,7 +227,7 @@ public:
         m_ren_type.add_item("Outline");
         m_ren_type.add_item("AGG Mono");
         m_ren_type.add_item("AGG Gray 8");
-        m_ren_type.cur_item(1);
+        m_ren_type.cur_item(2);
         add_ctrl(m_ren_type);
         m_ren_type.no_transform();
 
@@ -287,13 +307,13 @@ public:
 
         agg::trans_affine mtx;
         //mtx *= agg::trans_affine_skewing(-0.3, 0);
-        mtx *= agg::trans_affine_rotation(agg::deg2rad(-4.0));
+        //mtx *= agg::trans_affine_rotation(agg::deg2rad(-4.0));
         m_feng.transform(mtx);
 
         if(m_feng.create_font("Arial", gren))
         {
-            m_fman.precache(' ', 127);
-			m_fman.precache((BYTE)'À', (BYTE)'Á');
+            //m_fman.precache(' ', 127);
+			//m_fman.precache((BYTE)'À', (BYTE)'Á');
 
             double x = 10.0;
             double y0 = height() - m_height.value() - 10.0;

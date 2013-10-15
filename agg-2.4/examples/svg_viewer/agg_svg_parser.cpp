@@ -818,6 +818,7 @@ namespace svg
 	//-------------------------------------------------------------
 	void parser::parse_text_start(const char** attr)
 	{
+		m_path.begin_path();
 		m_parser_text.clear_attr();
 
 		for(int i = 0; attr[i]; i += 2)
@@ -837,6 +838,7 @@ namespace svg
 	void parser::parse_text_end()
 	{
 		m_parser_text.text_end();
+		m_path.end_path();
 	}
 
     //-------------------------------------------------------------

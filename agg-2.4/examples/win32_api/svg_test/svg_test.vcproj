@@ -257,6 +257,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\font_win32_tt\agg_font_win32_tt.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\agg_gsv_text.cpp"
 				>
 				<FileConfiguration
@@ -343,6 +347,10 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\svg_viewer\agg_svg_parser_text.cpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\svg_viewer\agg_svg_path_renderer.cpp"
@@ -504,11 +512,19 @@
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
+				RelativePath="..\..\..\font_win32_tt\agg_font_win32_tt.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\svg_viewer\agg_svg_exception.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\svg_viewer\agg_svg_parser.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\svg_viewer\agg_svg_parser_text.h"
 				>
 			</File>
 			<File
