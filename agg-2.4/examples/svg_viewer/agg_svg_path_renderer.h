@@ -34,6 +34,8 @@ namespace agg
 {
 namespace svg
 {
+	// pipeline class only for vertex counting, 
+	// vertexes transmitted transparent, without modification
     template<class VertexSource> class conv_count
     {
     public:

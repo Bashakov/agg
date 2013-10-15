@@ -47,6 +47,7 @@ namespace svg
 		m_feng.height(m_text.height);
 		m_feng.width((m_text.width == m_text.height) ? 0.0 : m_text.width / 2.4);
 		m_feng.flip_y(true);
+		m_feng.italic(false);
 		
 		if(1 && m_feng.create_font(m_text.family, m_text.gren) )
 		{

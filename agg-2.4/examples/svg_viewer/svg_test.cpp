@@ -81,7 +81,7 @@ public:
     {
         agg::svg::parser p(m_path);
         p.parse(fname);
-        m_path.arrange_orientations();
+        //m_path.arrange_orientations();
         m_path.bounding_rect(&m_min_x, &m_min_y, &m_max_x, &m_max_y);
         caption(p.title());
     }
@@ -114,7 +114,7 @@ public:
 
         ras.gamma(agg::gamma_none());
 
-		if(0)
+		if(1)
 		{
 			char buf[128]; 
 			sprintf(buf, "Vertices=%d Time=%.3f ms", vertex_count, tm);

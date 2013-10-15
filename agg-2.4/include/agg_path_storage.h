@@ -23,8 +23,11 @@
 #include "agg_array.h"
 #include "agg_bezier_arc.h"
 
+void DbgOut(const char* szFormat, ...);
+
 namespace agg
 {
+
 
 
     //----------------------------------------------------vertex_block_storage
@@ -718,6 +721,7 @@ namespace agg
 
         // Concatenate path. The path is added as is.
         //--------------------------------------------------------------------
+
         template<class VertexSource> 
         void concat_path(VertexSource& vs, unsigned path_id = 0)
         {
@@ -726,6 +730,7 @@ namespace agg
             vs.rewind(path_id);
             while(!is_stop(cmd = vs.vertex(&x, &y)))
             {
+				//DbgOut("concat_path %d %.3lf %.3lf\n", cmd, x, y);
                 m_vertices.add_vertex(x, y, cmd);
             }
         }

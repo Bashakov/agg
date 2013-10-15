@@ -34,6 +34,7 @@
 #include "agg_rasterizer_scanline_aa_nogamma.h"
 #include "agg_gamma_functions.h"
 
+void DbgOut(const char* szFormat, ...);
 
 namespace agg
 {
@@ -381,6 +382,7 @@ namespace agg
     template<class Clip> 
     void rasterizer_scanline_aa<Clip>::add_vertex(double x, double y, unsigned cmd)
     {
+		//DbgOut("rasterizer_scanline_aa<Clip>::add_vertex %d %.3lf %.3lf\n", cmd, x, y);
         if(is_move_to(cmd)) 
         {
             move_to_d(x, y);
