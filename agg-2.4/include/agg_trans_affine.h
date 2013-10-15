@@ -292,17 +292,19 @@ namespace agg
     //------------------------------------------------------------------------
     inline void trans_affine::transform(double* x, double* y) const
     {
-        register double tmp = *x;
-        *x = tmp * sx  + *y * shx + tx;
-        *y = tmp * shy + *y * sy  + ty;
+        register double tmpx = *x;
+		register double tmpy = *y;
+        *x = tmpx * sx  + tmpy * shx + tx;
+        *y = tmpx * shy + tmpy * sy  + ty;
     }
 
     //------------------------------------------------------------------------
     inline void trans_affine::transform_2x2(double* x, double* y) const
     {
-        register double tmp = *x;
-        *x = tmp * sx  + *y * shx;
-        *y = tmp * shy + *y * sy;
+        register double tmpx = *x;
+		register double tmpy = *y;
+        *x = tmpx * sx  + tmpy * shx;
+        *y = tmpx * shy + tmpy * sy;
     }
 
     //------------------------------------------------------------------------
@@ -318,9 +320,12 @@ namespace agg
     //------------------------------------------------------------------------
     inline double trans_affine::scale() const
     {
-        double x = 0.707106781 * sx  + 0.707106781 * shx;
-        double y = 0.707106781 * shy + 0.707106781 * sy;
-        return sqrt(x*x + y*y);
+//         double x = 0.707106781 * sx  + 0.707106781 * shx;
+//         double y = 0.707106781 * shy + 0.707106781 * sy;
+//         return sqrt(x*x + y*y);
+		double x = sx  + shx;
+		double y = shy +  sy;
+		return sqrt((x*x + y*y) * 0.5);
     }
 
     //------------------------------------------------------------------------

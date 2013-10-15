@@ -512,7 +512,19 @@
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
+				RelativePath="..\..\..\include\agg_array.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\font_win32_tt\agg_font_win32_tt.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\include\agg_math_stroke.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\include\agg_rasterizer_sl_clip.h"
 				>
 			</File>
 			<File

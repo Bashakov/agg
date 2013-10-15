@@ -635,7 +635,10 @@ namespace agg
                 idx <<= 1;
                 m_bglyph = m_glyphs + value(m_indices + idx);
                 m_eglyph = m_glyphs + value(m_indices + idx + 2);
-                m_status = start_glyph;
+                
+				// !! comment or not is not significant
+				// m_status = start_glyph;
+				// break;
 
             case start_glyph:
                 *x = m_x;
