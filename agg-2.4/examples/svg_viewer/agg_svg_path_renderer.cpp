@@ -219,7 +219,9 @@ namespace svg
     void path_renderer::fill(const rgba8& f)
     {
         path_attributes& attr = cur_attr();
+		rgba8::value_type a = (f.a == rgba8::base_mask)? attr.fill_color.a: f.a;
         attr.fill_color = f;
+		attr.fill_color.a = a;
         attr.fill_flag = true;
     }
 

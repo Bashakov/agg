@@ -209,10 +209,10 @@ namespace svg
         m_attr_name(new char[128]),
         m_attr_value(new char[1024]),
         m_attr_name_len(127),
-        m_attr_value_len(1023)
+        m_attr_value_len(1023),
+		m_parser_text(m_path)
     {
         m_title[0] = 0;
-		m_text.flag = false;
     }
 
     //------------------------------------------------------------------------
@@ -373,7 +373,7 @@ namespace svg
                 self.m_title[self.m_title_len] = 0;
             }
         }
-		else if(self.m_text.flag)
+		else if(self.m_parser_text.is_text_mode())
 		{
 			self.parse_text_content(s, len);
 		}
@@ -492,8 +492,6 @@ namespace svg
         while(*str == ' ') ++str;
         return atof(str);
     }
-
-
 
     //-------------------------------------------------------------
     bool parser::parse_attr(const char* name, const char* value)
@@ -820,46 +818,25 @@ namespace svg
 	//-------------------------------------------------------------
 	void parser::parse_text_start(const char** attr)
 	{
-		m_text.x = 0.0;
-		m_text.y = 0.0;
-		m_text.h =10.0;
-		m_text.ff = NULL;
+		m_parser_text.clear_attr();
 
-
-		m_path.begin_path();
 		for(int i = 0; attr[i]; i += 2)
 		{
 			if(!parse_attr(attr[i], attr[i + 1]))
 			{
-				if(strcmp(attr[i], "x") == 0)			m_text.x = parse_double(attr[i + 1]);
-				if(strcmp(attr[i], "y") == 0)			m_text.y = parse_double(attr[i + 1]);
-				if(strcmp(attr[i], "font-size") == 0)	m_text.h = parse_double(attr[i + 1]);
-				if(strcmp(attr[i], "font-family") == 0)	m_text.ff = attr[i + 1];
-				
+				m_parser_text.parse_attr(attr[i], attr[i + 1]);
 			}
 		}
-		m_text.flag = true;
 	}
 
 	void parser::parse_text_content(const char* s, int len)
 	{
-		agg::gsv_text t;
-		t.size(m_text.h);
-		t.flip(true);
-		t.start_point(m_text.x, m_text.y);
-		t.text(s, len);
-
-		agg::conv_stroke<agg::gsv_text> pt(t);
-		pt.width(m_text.h / 10.0);
-		m_path.concat_path(pt);
-
-		m_path.end_path();
-		m_text.flag = false;
+		m_parser_text.text_content(s, len);
 	}
 
 	void parser::parse_text_end()
 	{
-		m_text.flag = false;
+		m_parser_text.text_end();
 	}
 
     //-------------------------------------------------------------

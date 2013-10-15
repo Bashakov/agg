@@ -125,7 +125,7 @@ public:
         //agg::render_ctrl(ras, sl, rb, m_scale);
        // agg::render_ctrl(ras, sl, rb, m_rotate);
 
-		if(1)
+		if(0)
 		{
 			char buf[128]; 
 			sprintf(buf, "Vertices=%d Time=%.3f ms", vertex_count, tm);
