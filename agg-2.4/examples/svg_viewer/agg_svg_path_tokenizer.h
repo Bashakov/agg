@@ -20,6 +20,7 @@
 #define AGG_SVG_PATH_TOKENIZER_INCLUDED
 
 #include "agg_svg_exception.h"
+#include "agg_basics.h"
 
 namespace agg 
 { 
@@ -57,15 +58,16 @@ namespace svg
     //===============================================================
     class path_tokenizer
     {
+		typedef str_type::char_type		char_type;
      public:
         path_tokenizer();
 
-        void set_path_str(const char* str);
+        void set_path_str(const char_type* str);
         bool next();
 
-        double next(char cmd);
+        double next(str_type::char_type cmd);
 
-        char   last_command() const { return m_last_command; }
+        char_type last_command() const { return m_last_command; }
         double last_number() const { return m_last_number; }
 
 
@@ -98,9 +100,9 @@ namespace svg
         char m_commands_mask[256/8];
         char m_numeric_mask[256/8];
 
-        const char* m_path;
-        double m_last_number;
-        char   m_last_command;
+        const char_type* m_path;
+        double		m_last_number;
+        char_type   m_last_command;
 
         static const char s_commands[];
         static const char s_numeric[];

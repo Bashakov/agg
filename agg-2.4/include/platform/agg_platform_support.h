@@ -422,6 +422,8 @@ namespace agg
     // 
     class platform_support
     {
+		typedef str_type::string_type	string_type;
+		typedef str_type::char_type		char_type;
     public:
         enum max_images_e { max_images = 16 };
 
@@ -433,8 +435,8 @@ namespace agg
         // Setting the windows caption (title). Should be able
         // to be called at least before calling init(). 
         // It's perfect if they can be called anytime.
-        void        caption(const char* cap);
-        const char* caption() const { return m_caption; }
+        void			 caption(const char_type* cap);
+        const char_type* caption() const { return m_str_caption.c_str(); }
 
         //--------------------------------------------------------------------
         // These 3 methods handle working with images. The image
@@ -504,7 +506,7 @@ namespace agg
         //--------------------------------------------------------------------
         // Returns file extension used in the implementation for the particular
         // system.
-        const char* img_ext() const;
+        const char_type* img_ext() const;
 
         //--------------------------------------------------------------------
         void copy_img_to_window(unsigned idx)
@@ -626,7 +628,7 @@ namespace agg
         //--------------------------------------------------------------------
         // display message box or print the message to the console 
         // (depending on implementation)
-        void message(const char* msg);
+        void message(const char_type* msg);
 
         //--------------------------------------------------------------------
         // Stopwatch functions. Function elapsed_time() returns time elapsed 
@@ -650,7 +652,7 @@ namespace agg
         // FILE* fd = fopen(full_file_name("some.file"), "r"); 
         // instead of
         // FILE* fd = fopen("some.file", "r"); 
-        const char* full_file_name(const char* file_name);
+        const char_type* full_file_name(const char_type* file_name);
 
     public:
         platform_specific* m_specific;
@@ -670,7 +672,7 @@ namespace agg
         unsigned         m_window_flags;
         bool             m_wait_mode;
         bool             m_flip_y;
-        char             m_caption[256];
+		string_type      m_str_caption;
         int              m_initial_width;
         int              m_initial_height;
         trans_affine     m_resize_mtx;

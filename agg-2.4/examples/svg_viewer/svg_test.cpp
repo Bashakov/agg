@@ -80,11 +80,10 @@ public:
         m_rotate.value(0.0);
     }
 
-    void parse_svg(const char* fname)
+    void parse_svg(const TCHAR* fname)
     {
         agg::svg::parser p(m_path);
         p.parse(fname);
-        //m_path.arrange_orientations();
         m_path.bounding_rect(&m_min_x, &m_min_y, &m_max_x, &m_max_y);
         caption(p.title());
     }
@@ -129,8 +128,8 @@ public:
 
 		if(1)
 		{
-			char buf[128]; 
-			sprintf(buf, "Vertices=%d Time=%.3f ms", vertex_count, tm);
+			TCHAR buf[128]; 
+			_stprintf(buf, _T("Vertices=%d Time=%.3f ms"), vertex_count, tm);
 
 			agg::gsv_text t;
 			t.size(10.0);
@@ -205,12 +204,11 @@ public:
             double m[6];
             mtx.store_to(m);
 
-            char buf[128];
-            sprintf(buf, "%3.3f, %3.3f, %3.3f, %3.3f, %3.3f, %3.3f",
-                         m[0], m[1], m[2], m[3], m[4], m[5]);
+            TCHAR buf[128];
+			_stprintf(buf, _T("%3.3f, %3.3f, %3.3f, %3.3f, %3.3f, %3.3f"), m[0], m[1], m[2], m[3], m[4], m[5]);
 
             message(buf);
-            FILE* fd = fopen(full_file_name("transform.txt"), "a");
+			FILE* fd = _tfopen(full_file_name(_T("transform.txt")), _T("a"));
             fprintf(fd, "%s\n", buf);
             fclose(fd);
         }
@@ -218,26 +216,24 @@ public:
 };
 
 
-
-
 int agg_main(int argc, char* argv[])
 {
 	the_application app(pix_format, flip_y);
 
-    const char* fname = "test.svg";
+    const TCHAR* fname = _T("test.svg");
     if(argc <= 1)
     {
-        FILE* fd = fopen(app.full_file_name(fname), "r");
+		FILE* fd = _tfopen( app.full_file_name(fname), _T("r"));
         if(fd == 0)
         {
-            app.message("Usage: svg_test <svg_file>\nDownload http://antigrain.com/svg/tiger.svg");
+            app.message(_T("Usage: svg_test <svg_file>\nDownload http://antigrain.com/svg/tiger.svg"));
             return 1;
         }
         fclose(fd);
     }
     else
     {
-        fname = argv[1];
+        //fname = argv[1];
     }
 
     try

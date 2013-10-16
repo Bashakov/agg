@@ -494,16 +494,16 @@ namespace agg
       m_height(0.0),
       m_space(0.0),
       m_line_space(0.0),
-      m_text(m_chr),
-      m_text_buf(),
-      m_cur_chr(m_chr),
+      m_ptext(m_tchr),
+      m_str_text(_T("")),
+      m_cur_tchr(m_tchr),
       m_font(gsv_default_font),
       m_loaded_font(),
       m_status(initial),
       m_big_endian(false),
       m_flip(false)
     {
-        m_chr[0] = m_chr[1] = 0;
+        m_tchr[0] = m_tchr[1] = 0;
 
         int t = 1;
         if(*(char*)&t == 0) m_big_endian = true;
@@ -566,21 +566,20 @@ namespace agg
     }
 
     //-------------------------------------------------------------------------
-    void gsv_text::text(const char* text, int len)
+    void gsv_text::text(const str_type::char_type* text, int len)
     {
         if(text == 0)
         {
-            m_chr[0] = 0;
-            m_text = m_chr;
+            m_tchr[0] = 0;
+            m_ptext = m_tchr;
             return;
         }
-		unsigned new_size = len? len: strlen(text);
-        if(new_size+1 > m_text_buf.size())
-            m_text_buf.resize(new_size + 1);
+		if(len)
+			m_str_text.assign(text, text + len);
+		else
+			m_str_text = text;
 
-        memcpy(&m_text_buf[0], text, new_size);
-		m_text_buf[new_size] = 0;
-        m_text = &m_text_buf[0];
+        m_ptext = &m_str_text[0];
     }
 
     //-------------------------------------------------------------------------
@@ -596,7 +595,7 @@ namespace agg
         m_h = m_height / base_height;
         m_w = (m_width == 0.0) ? m_h : m_width / base_height;
         if(m_flip) m_h = -m_h;
-        m_cur_chr = m_text;
+        m_cur_tchr = m_ptext;
     }
 
     //-------------------------------------------------------------------------
@@ -620,12 +619,12 @@ namespace agg
                 m_status = next_char;
 
             case next_char:
-                if(*m_cur_chr == 0) 
+                if(*m_cur_tchr == 0) 
                 {
                     quit = true;
                     break;
                 }
-                idx = (*m_cur_chr++) & 0xFF;
+                idx = (*m_cur_tchr++) & 0xFF;
                 if(idx == '\n')
                 {
                     m_x = m_start_x;

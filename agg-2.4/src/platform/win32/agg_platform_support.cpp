@@ -739,6 +739,7 @@ namespace agg
     //------------------------------------------------------------------------
     platform_support::platform_support(pix_format_e format, bool flip_y) :
         m_specific(new platform_specific(format, flip_y)),
+		m_str_caption(_T("Anti-Grain Geometry Application")),
         m_format(format),
         m_bpp(m_specific->m_bpp),
         m_window_flags(0),
@@ -747,7 +748,7 @@ namespace agg
         m_initial_width(10),
         m_initial_height(10)
     {
-        strcpy(m_caption, "Anti-Grain Geometry Application");
+        ;
     }
 
 
@@ -760,13 +761,11 @@ namespace agg
 
 
     //------------------------------------------------------------------------
-    void platform_support::caption(const char* cap)
+	void platform_support::caption(const char_type* cap)
     {
-        strcpy(m_caption, cap);
+        m_str_caption = cap;
         if(m_specific->m_hwnd)
-        {
-            SetWindowText(m_specific->m_hwnd, m_caption);
-        }
+            SetWindowText(m_specific->m_hwnd, m_str_caption.c_str());
     }
 
     //------------------------------------------------------------------------
@@ -1169,9 +1168,9 @@ namespace agg
 
 
     //------------------------------------------------------------------------
-    void platform_support::message(const char* msg)
+    void platform_support::message(const char_type* msg)
     {
-        ::MessageBox(m_specific->m_hwnd, msg, "AGG Message", MB_OK);
+        ::MessageBox(m_specific->m_hwnd, msg, _T("AGG Message"), MB_OK);
     }
 
 
@@ -1188,14 +1187,14 @@ namespace agg
         int wflags = CS_OWNDC | CS_VREDRAW | CS_HREDRAW;
 
         WNDCLASS wc;
-        wc.lpszClassName = "AGGAppClass";
+        wc.lpszClassName = _T("AGGAppClass");
         wc.lpfnWndProc = window_proc;
         wc.style = wflags;
         wc.hInstance = g_windows_instance;
         wc.hIcon = LoadIcon(0, IDI_APPLICATION);
         wc.hCursor = LoadCursor(0, IDC_ARROW);
         wc.hbrBackground = (HBRUSH)(COLOR_WINDOW+1);
-        wc.lpszMenuName = "AGGAppMenu";
+        wc.lpszMenuName = _T("AGGAppMenu");
         wc.cbClsExtra = 0;
         wc.cbWndExtra = 0;
         ::RegisterClass(&wc);
@@ -1207,8 +1206,8 @@ namespace agg
             wflags |= WS_THICKFRAME | WS_MAXIMIZEBOX;
         }
 
-        m_specific->m_hwnd = ::CreateWindow("AGGAppClass",
-                                            m_caption,
+        m_specific->m_hwnd = ::CreateWindow(_T("AGGAppClass"),
+                                            m_str_caption.c_str(),
                                             wflags,
                                             100,
                                             100,
@@ -1285,11 +1284,11 @@ namespace agg
 
 
     //------------------------------------------------------------------------
-    const char* platform_support::img_ext() const { return ".bmp"; }
+    const platform_support::char_type* platform_support::img_ext() const { return _T(".bmp"); }
 
 
     //------------------------------------------------------------------------
-    const char* platform_support::full_file_name(const char* file_name)
+    const platform_support::char_type* platform_support::full_file_name(const char_type* file_name)
     {
         return file_name;
     }

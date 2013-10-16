@@ -23,6 +23,7 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdarg.h>
+#include "agg_basics.h"
 
 namespace agg 
 { 
@@ -33,34 +34,35 @@ namespace svg
     public:
         ~exception()
         {
-            delete [] m_msg;
         }
 
-        exception() : m_msg(0) {}
+        exception() : m_str_msg(_T("No error")) {}
           
-        exception(const char* fmt, ...) :
-            m_msg(0)
+		exception(const str_type::char_type* fmt, ...)
         {
             if(fmt) 
             {
-                m_msg = new char [4096];
+                m_str_msg.resize(4096);
                 va_list arg;
                 va_start(arg, fmt);
-                vsprintf(m_msg, fmt, arg);
+				_vstprintf(&m_str_msg[0], fmt, arg);
                 va_end(arg);
             }
+			else
+			{
+				m_str_msg = _T("No error");
+			}
         }
 
-        exception(const exception& exc) :
-            m_msg(exc.m_msg ? new char[strlen(exc.m_msg) + 1] : 0)
+        exception(const exception& exc) 
+			: m_str_msg(exc.m_str_msg)
         {
-            if(m_msg) strcpy(m_msg, exc.m_msg);
         }
         
-        const char* msg() const { return m_msg; }
+        const str_type::char_type* msg() const { return m_str_msg.c_str(); }
 
     private:
-        char* m_msg;
+        str_type::string_type	m_str_msg;
     };
 
 }

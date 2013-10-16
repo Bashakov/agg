@@ -37,6 +37,7 @@ namespace agg
     //--------------------------------------------------------slider_ctrl_impl
     class slider_ctrl_impl : public ctrl
     {
+		typedef str_type::char_type	char_type;
     public:
         slider_ctrl_impl(double x1, double y1, double x2, double y2, bool flip_y=false);
 
@@ -77,7 +78,7 @@ namespace agg
         double   m_max;
         unsigned m_num_steps;
         bool     m_descending;
-        char     m_label[64];
+        char_type     m_label[64];
         double   m_xs1;
         double   m_ys1;
         double   m_xs2;

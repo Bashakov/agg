@@ -12,7 +12,7 @@ namespace svg
 		height = 18.0;
 		width = 18.0;
 		weight = 0.0;
-		family = "Tahoma";
+		family = _T("Tahoma");
 		in_tag = tag;
 		gren = glyph_ren_outline;
 	}
@@ -33,17 +33,17 @@ namespace svg
 		m_text.init(true);
 	}
 
-	double parse_double(const char* str);
+	double parse_double(const str_type::char_type* str);
 
-	void parser_text::parse_attr(const char* name, const char* value)
+	void parser_text::parse_attr(const char_type* name, const char_type* value)
 	{
-		if(strcmp(name, "x") == 0)				m_text.x = parse_double(value);
-		if(strcmp(name, "y") == 0)				m_text.y = parse_double(value);
-		if(strcmp(name, "font-size") == 0)		m_text.width = m_text.height = parse_double(value);
-		if(strcmp(name, "font-family") == 0)	m_text.family = value;
+		if(_tcscmp(name, _T("x")) == 0)				m_text.x = parse_double(value);
+		if(_tcscmp(name, _T("y")) == 0)				m_text.y = parse_double(value);
+		if(_tcscmp(name, _T("font-size")) == 0)		m_text.width = m_text.height = parse_double(value);
+		if(_tcscmp(name, _T("font-family")) == 0)	m_text.family = value;
 	}
 
-	void parser_text::text_content(const char* s, int len)
+	void parser_text::text_content(const char_type* s, int len)
 	{
 		m_feng.height(m_text.height);
 		m_feng.width((m_text.width == m_text.height) ? 0.0 : m_text.width / 2.4);

@@ -11,15 +11,16 @@ namespace agg
 {
 namespace svg
 {
-
 	class parser_text
 	{
+		typedef str_type::char_type		char_type;
+
 		struct text_desc
 		{
 			double			x, y;
 			double			height, width;
 			double			weight;
-			const char *	family;
+			const char_type *	family;
 			glyph_rendering gren;
 			bool			in_tag;
 
@@ -33,8 +34,8 @@ namespace svg
 		parser_text(path_renderer & path);
 
 		void clear_attr();
-		void parse_attr(const char* name, const char* value);
-		void text_content(const char* s, int len );
+		void parse_attr(const char_type* name, const char_type* value);
+		void text_content(const char_type* s, int len);
 		void text_end();
 
 		bool is_text_mode() const { return m_text.in_tag; };

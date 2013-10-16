@@ -54,21 +54,20 @@ namespace agg
         //--------------------------------------------------------------------
         font_cache() : 
             m_allocator(block_size),
-            m_font_signature(0)
+            m_str_signature(_T(""))
         {}
 
         //--------------------------------------------------------------------
-        void signature(const char* font_signature)
+        void signature(const str_type::char_type* font_signature)
         {
-            m_font_signature = (char*)m_allocator.allocate(strlen(font_signature) + 1);
-            strcpy(m_font_signature, font_signature);
+            m_str_signature = font_signature;
             memset(m_glyphs, 0, sizeof(m_glyphs));
         }
 
         //--------------------------------------------------------------------
-        bool font_is(const char* font_signature) const
+		bool font_is(const str_type::char_type* font_signature) const
         {
-            return strcmp(font_signature, m_font_signature) == 0;
+			return (font_signature == m_str_signature);
         }
 
         //--------------------------------------------------------------------
@@ -118,20 +117,15 @@ namespace agg
         }
 
     private:
-        block_allocator m_allocator;
-        glyph_cache**   m_glyphs[256];
-        char*           m_font_signature;
+        block_allocator			m_allocator;
+        glyph_cache**			m_glyphs[256];
+		str_type::string_type   m_str_signature;
     };
 
-
-
-
-
-
-    
     //---------------------------------------------------------font_cache_pool
     class font_cache_pool
     {
+		typedef str_type::char_type		char_type;
     public:
         //--------------------------------------------------------------------
         ~font_cache_pool()
@@ -154,7 +148,7 @@ namespace agg
 
 
         //--------------------------------------------------------------------
-        void font(const char* font_signature, bool reset_cache = false)
+		void font(const char_type * font_signature, bool reset_cache = false)
         {
             int idx = find_font(font_signature);
             if(idx >= 0)
@@ -172,9 +166,7 @@ namespace agg
                 if(m_num_fonts >= m_max_fonts)
                 {
                     obj_allocator<font_cache>::deallocate(m_fonts[0]);
-                    memcpy(m_fonts, 
-                           m_fonts + 1, 
-                           (m_max_fonts - 1) * sizeof(font_cache*));
+                    memcpy(m_fonts, m_fonts + 1, (m_max_fonts - 1) * sizeof(font_cache*));
                     m_num_fonts = m_max_fonts - 1;
                 }
                 m_fonts[m_num_fonts] = obj_allocator<font_cache>::allocate();
@@ -221,7 +213,7 @@ namespace agg
 
 
         //--------------------------------------------------------------------
-        int find_font(const char* font_signature)
+        int find_font(const char_type* font_signature)
         {
             unsigned i;
             for(i = 0; i < m_num_fonts; i++)

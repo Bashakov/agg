@@ -34,6 +34,8 @@ namespace agg
     //
     class gsv_text
     {
+		typedef str_type::char_type		char_type;
+		typedef str_type::string_type	string_type;
         enum status
         {
             initial,
@@ -52,7 +54,7 @@ namespace agg
         void space(double space);
         void line_space(double line_space);
         void start_point(double x, double y);
-        void text(const char* text, int len = 0);
+		void text(const str_type::char_type* text, int len = 0);
         
         double text_width();
 
@@ -88,10 +90,10 @@ namespace agg
         double          m_height;
         double          m_space;
         double          m_line_space;
-        char            m_chr[2];
-        char*           m_text;
-        pod_array<char> m_text_buf;
-        char*           m_cur_chr;
+        char_type       m_tchr[2];
+        char_type*      m_ptext;
+        string_type		m_str_text;
+        char_type*      m_cur_tchr;
         const void*     m_font;
         pod_array<char> m_loaded_font;
         status          m_status;

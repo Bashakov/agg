@@ -875,9 +875,7 @@ namespace agg
             }
 
             m_blocks[m_num_blocks].size = size;
-            m_blocks[m_num_blocks].data = 
-                m_buf_ptr =
-                pod_allocator<int8u>::allocate(size);
+            m_blocks[m_num_blocks].data = m_buf_ptr = pod_allocator<int8u>::allocate(size);
 
             m_num_blocks++;
             m_rest = size;
@@ -891,12 +889,6 @@ namespace agg
         int8u*      m_buf_ptr;
         unsigned    m_rest;
     };
-
-
-
-
-
-
 
 
     //------------------------------------------------------------------------

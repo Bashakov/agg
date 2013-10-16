@@ -17,6 +17,7 @@
 #define AGG_FONT_WIN32_TT_INCLUDED
 
 #include <windows.h>
+
 #include "agg_scanline_storage_aa.h"
 #include "agg_scanline_storage_bin.h"
 #include "agg_scanline_u.h"
@@ -33,7 +34,11 @@ namespace agg
     //-----------------------------------------------font_engine_win32_tt_base
     class font_engine_win32_tt_base
     {
-       enum { buf_size = 32768-32 };
+        enum { buf_size = 32768-32 };
+		typedef str_type::char_type			char_type;
+		typedef str_type::string_type		string_type;
+		typedef str_type::byte_type			byte_type;
+		typedef str_type::Data				Data;
 
     public:
         //--------------------------------------------------------------------
@@ -41,6 +46,10 @@ namespace agg
         typedef serialized_scanlines_adaptor_bin          mono_adaptor_type;
         typedef scanline_storage_aa8                      scanlines_aa_type;
         typedef scanline_storage_bin                      scanlines_bin_type;
+		typedef path_storage_integer<int16, 6>            path_storage_integer16;
+		typedef path_storage_integer<int32, 6>            path_storage_integer32;
+		typedef conv_curve<path_storage_integer16 >		  path_curves16;
+		typedef conv_curve<path_storage_integer32 >		  path_curves32;
 
         //--------------------------------------------------------------------
         ~font_engine_win32_tt_base();
@@ -57,9 +66,9 @@ namespace agg
         void pitch_and_family(DWORD p){ m_pitch_and_family = p; }
         void flip_y(bool flip)        { m_flip_y = flip;         }
         void hinting(bool h)          { m_hinting = h;           }
-        bool create_font(const char* typeface_, glyph_rendering ren_type);
+		bool create_font(const char_type* typeface_, glyph_rendering ren_type);
 
-        bool create_font(const char* typeface_, 
+        bool create_font(const char_type* typeface_, 
                          glyph_rendering ren_type,
                          double height_,
                          double width_=0.0,
@@ -84,7 +93,7 @@ namespace agg
         // Accessors
         //--------------------------------------------------------------------
         unsigned    resolution()   const { return m_resolution; }
-        const char* typeface()     const { return m_typeface;   }
+        const char_type* typeface()const { return m_str_typeface.c_str();   }
         double      height()       const { return m_height;     }
         double      width()        const { return m_width;      }
         int         weight()       const { return m_weight;     }
@@ -97,7 +106,7 @@ namespace agg
 
         // Interface mandatory to implement for font_cache_manager
         //--------------------------------------------------------------------
-        const char*     font_signature() const { return m_signature;    }
+        const char_type* font_signature() const { return m_str_signature.c_str();    }
         int             change_stamp()   const { return m_change_stamp; }
 
         bool            prepare_glyph(unsigned glyph_code);
@@ -118,7 +127,7 @@ namespace agg
         void update_signature();
         void load_kerning_pairs();
         void sort_kerning_pairs();
-        int  find_font(const char* name) const;
+        int  find_font(const char_type* name) const;
 
         bool            m_flag32;
         HDC             m_dc;
@@ -126,13 +135,11 @@ namespace agg
         HFONT*          m_fonts;
         unsigned        m_num_fonts;
         unsigned        m_max_fonts;
-        char**          m_font_names;
+        char_type**     m_font_names;
         HFONT           m_cur_font;
-
         int             m_change_stamp;
-        char*           m_typeface;
-        unsigned        m_typeface_len;
-        char*           m_signature;
+        string_type     m_str_typeface;
+        string_type     m_str_signature;
         unsigned        m_height;
         unsigned        m_width;
         int             m_weight;
@@ -152,16 +159,16 @@ namespace agg
         double          m_advance_x;
         double          m_advance_y;
         MAT2            m_matrix;
-        char*           m_gbuf;
+        Data			m_gbuffer;
         KERNINGPAIR*    m_kerning_pairs;
         unsigned        m_num_kerning_pairs;
         unsigned        m_max_kerning_pairs;
         trans_affine    m_affine;
 
-        path_storage_integer<int16, 6>              m_path16;
-        path_storage_integer<int32, 6>              m_path32;
-        conv_curve<path_storage_integer<int16, 6> > m_curves16;
-        conv_curve<path_storage_integer<int32, 6> > m_curves32;
+        path_storage_integer16   m_path16;
+        path_storage_integer32   m_path32;
+        path_curves16			 m_curves16;
+        path_curves32			 m_curves32;
         scanline_u8              m_scanline_aa;
         scanline_bin             m_scanline_bin;
         scanlines_aa_type        m_scanlines_aa;

@@ -17,6 +17,10 @@
 #define AGG_BASICS_INCLUDED
 
 #include <math.h>
+#include <TCHAR.H>
+#include <string>
+#include <vector>
+
 #include "agg_config.h"
 
 //---------------------------------------------------------AGG_CUSTOM_ALLOCATOR
@@ -528,6 +532,27 @@ namespace agg
     {
         return fabs(v1 - v2) <= double(epsilon);
     }
+}
+
+//------------------------------------------------------------
+//------------------------------------------------------------
+
+namespace agg
+{
+namespace str_type
+{
+
+	typedef TCHAR					char_type;
+#ifdef _UNICODE
+	typedef std::wstring			string_type;
+#else
+	typedef std::string				string_type;
+#endif
+
+	typedef	unsigned char			byte_type;
+	typedef std::vector<byte_type>	Data;
+
+}	
 }
 
 

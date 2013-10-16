@@ -61,9 +61,8 @@ namespace svg
     void path_renderer::end_path()
     {
         if(m_attr_storage.size() == 0) 
-        {
-            throw exception("end_path : The path was not begun");
-        }
+            throw exception(_T("end_path : The path was not begun"));
+
         path_attributes attr = cur_attr();
         unsigned idx = m_attr_storage[m_attr_storage.size() - 1].index;
         attr.index = idx;
@@ -191,9 +190,8 @@ namespace svg
     path_attributes& path_renderer::cur_attr()
     {
         if(m_attr_stack.size() == 0)
-        {
-            throw exception("cur_attr : Attribute stack is empty");
-        }
+             throw exception(_T("cur_attr : Attribute stack is empty"));
+ 
         return m_attr_stack[m_attr_stack.size() - 1];
     }
 
@@ -209,9 +207,8 @@ namespace svg
     void path_renderer::pop_attr()
     {
         if(m_attr_stack.size() == 0)
-        {
-            throw exception("pop_attr : Attribute stack is empty");
-        }
+            throw exception(_T("pop_attr : Attribute stack is empty"));
+
         m_attr_stack.remove_last();
     }
 
@@ -299,82 +296,78 @@ namespace svg
         while(tok.next())
         {
             double arg[10];
-            char cmd = tok.last_command();
+			str_type::char_type cmd = tok.last_command();
             unsigned i;
             switch(cmd)
             {
-                case 'M': case 'm':
+                case _T('M'): case _T('m'):
                     arg[0] = tok.last_number();
                     arg[1] = tok.next(cmd);
-                    move_to(arg[0], arg[1], cmd == 'm');
+                    move_to(arg[0], arg[1], cmd == _T('m'));
                     break;
 
-                case 'L': case 'l':
+                case _T('L'): case _T('l'):
                     arg[0] = tok.last_number();
                     arg[1] = tok.next(cmd);
-                    line_to(arg[0], arg[1], cmd == 'l');
+                    line_to(arg[0], arg[1], cmd == _T('l'));
                     break;
 
-                case 'V': case 'v':
-                    vline_to(tok.last_number(), cmd == 'v');
+                case _T('V'): case _T('v'):
+                    vline_to(tok.last_number(), cmd == _T('v'));
                     break;
 
-                case 'H': case 'h':
-                    hline_to(tok.last_number(), cmd == 'h');
+                case _T('H'): case _T('h'):
+                    hline_to(tok.last_number(), cmd == _T('h'));
                     break;
                 
-                case 'Q': case 'q':
+                case _T('Q'): case _T('q'):
                     arg[0] = tok.last_number();
                     for(i = 1; i < 4; i++)
                     {
                         arg[i] = tok.next(cmd);
                     }
-                    curve3(arg[0], arg[1], arg[2], arg[3], cmd == 'q');
+                    curve3(arg[0], arg[1], arg[2], arg[3], cmd == _T('q'));
                     break;
 
-                case 'T': case 't':
+                case _T('T'): case _T('t'):
                     arg[0] = tok.last_number();
                     arg[1] = tok.next(cmd);
-                    curve3(arg[0], arg[1], cmd == 't');
+                    curve3(arg[0], arg[1], cmd == _T('t'));
                     break;
 
-                case 'C': case 'c':
+                case _T('C'): case _T('c'):
                     arg[0] = tok.last_number();
                     for(i = 1; i < 6; i++)
                     {
                         arg[i] = tok.next(cmd);
                     }
-                    curve4(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], cmd == 'c');
+                    curve4(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], cmd == _T('c'));
                     break;
 
-                case 'S': case 's':
+                case _T('S'): case _T('s'):
                     arg[0] = tok.last_number();
                     for(i = 1; i < 4; i++)
                     {
                         arg[i] = tok.next(cmd);
                     }
-                    curve4(arg[0], arg[1], arg[2], arg[3], cmd == 's');
+                    curve4(arg[0], arg[1], arg[2], arg[3], cmd == _T('s'));
                     break;
 
-                case 'A': case 'a':
+                case _T('A'): case _T('a'):
 				arg[0] = tok.last_number();
 				for(i = 1; i < 7; ++i)
 				{
 					arg[i] = tok.next(cmd);
 				}
-				arc(arg[0], arg[1], arg[2], arg[3]!=0.0, arg[4]!=0.0, arg[5], arg[6], cmd == 'a');
+				arc(arg[0], arg[1], arg[2], arg[3]!=0.0, arg[4]!=0.0, arg[5], arg[6], cmd == _T('a'));
 				break;
 
-                case 'Z': case 'z':
+                case _T('Z'): case _T('z'):
                     close_subpath();
                     break;
 
                 default:
-                {
-                    char buf[100];
-                    sprintf(buf, "parse_path: Invalid Command %c", cmd);
-                    throw exception(buf);
-                }
+                    throw exception(_T("parse_path: Invalid Command %c"), cmd);
             }
         }
     }

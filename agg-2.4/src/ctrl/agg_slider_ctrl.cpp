@@ -161,8 +161,8 @@ namespace agg
             m_text.text(m_label);
             if(m_label[0])
             {
-                char buf[256];
-                sprintf(buf, m_label, value());
+                char_type buf[256];
+				_stprintf (buf, m_label, value());
                 m_text.text(buf);
             }
             m_text.start_point(m_x1, m_y1);

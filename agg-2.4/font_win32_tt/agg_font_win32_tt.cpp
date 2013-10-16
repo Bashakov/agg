@@ -166,7 +166,7 @@ namespace agg
 
     //------------------------------------------------------------------------
     template<class Scanline, class ScanlineStorage>
-    void decompose_win32_glyph_bitmap_mono(const char* gbuf, 
+	void decompose_win32_glyph_bitmap_mono(const str_type::byte_type* gbuf, 
                                            int w, int h,
                                            int x, int y,
                                            bool flip_y,
@@ -207,7 +207,7 @@ namespace agg
 
     //------------------------------------------------------------------------
     template<class Rasterizer, class Scanline, class ScanlineStorage>
-    void decompose_win32_glyph_bitmap_gray8(const char* gbuf, 
+	void decompose_win32_glyph_bitmap_gray8(const str_type::byte_type* gbuf, 
                                             int w, int h,
                                             int x, int y,
                                             bool flip_y,
@@ -254,14 +254,12 @@ namespace agg
 
     //------------------------------------------------------------------------
     template<class PathStorage>
-    bool decompose_win32_glyph_outline(const char* gbuf,
-                                       unsigned total_size,
-                                       bool flip_y, 
-                                       const trans_affine& mtx,
-                                       PathStorage& path)
+    bool decompose_win32_glyph_outline(const str_type::byte_type* gbuf, unsigned total_size,
+			bool flip_y, const trans_affine& mtx, PathStorage& path)
     {
-        const char* cur_glyph = gbuf;
-        const char* end_glyph = gbuf + total_size;
+		typedef str_type::byte_type byte_type;
+        const byte_type * cur_glyph = gbuf;
+        const byte_type * end_glyph = gbuf + total_size;
         double x, y;
         typedef typename PathStorage::value_type value_type;
         
@@ -269,8 +267,8 @@ namespace agg
         {
             const TTPOLYGONHEADER* th = (TTPOLYGONHEADER*)cur_glyph;
             
-            const char* end_poly = cur_glyph + th->cb;
-            const char* cur_poly = cur_glyph + sizeof(TTPOLYGONHEADER);
+            const byte_type * end_poly = cur_glyph + th->cb;
+            const byte_type * cur_poly = cur_glyph + sizeof(TTPOLYGONHEADER);
 
             x = fx_to_dbl(th->pfxStart.x);
             y = fx_to_dbl(th->pfxStart.y);
@@ -340,9 +338,7 @@ namespace agg
     font_engine_win32_tt_base::~font_engine_win32_tt_base()
     {
         delete [] m_kerning_pairs;
-        delete [] m_gbuf;
-        delete [] m_signature;
-        delete [] m_typeface;
+
         if(m_dc && m_old_font) ::SelectObject(m_dc, m_old_font);
         unsigned i;
         for(i = 0; i < m_num_fonts; ++i)
@@ -366,13 +362,9 @@ namespace agg
         m_fonts(new HFONT [max_fonts]),
         m_num_fonts(0),
         m_max_fonts(max_fonts),
-        m_font_names(new char* [max_fonts]),
+        m_font_names(new char_type* [max_fonts]),
         m_cur_font(0),
-
         m_change_stamp(0),
-        m_typeface(new char [256-16]),
-        m_typeface_len(256-16-1),
-        m_signature(new char [256+256-16]),
         m_height(0),
         m_width(0),
         m_weight(FW_REGULAR),
@@ -390,11 +382,9 @@ namespace agg
         m_bounds(1,1,0,0),
         m_advance_x(0.0),
         m_advance_y(0.0),
-        m_gbuf(new char [buf_size]),
         m_kerning_pairs(0),
         m_num_kerning_pairs(0),
         m_max_kerning_pairs(0),
-
         m_path16(),
         m_path32(),
         m_curves16(m_path16),
@@ -405,44 +395,37 @@ namespace agg
         m_scanlines_bin(),
         m_rasterizer()
     {
+		m_gbuffer.resize(buf_size);
         m_curves16.approximation_scale(4.0);
         m_curves32.approximation_scale(4.0);
         memset(&m_matrix, 0, sizeof(m_matrix));
         m_matrix.eM11.value = 1;
         m_matrix.eM22.value = 1;
+		m_str_typeface.assign(256, 0);
+		m_str_signature.assign(512, 0);
     }
 
 
 
     //------------------------------------------------------------------------
-    int font_engine_win32_tt_base::find_font(const char* name) const
+    int font_engine_win32_tt_base::find_font(const char_type* name) const
     {
         unsigned i;
         for(i = 0; i < m_num_fonts; ++i)
         {
-            if(strcmp(name, m_font_names[i]) == 0) return i;
+            if(_tcscmp(name, m_font_names[i]) == 0) return i;
         }
         return -1;
     }
 
     //------------------------------------------------------------------------
-    bool font_engine_win32_tt_base::create_font(const char* typeface_, 
-                                                glyph_rendering ren_type)
+    bool font_engine_win32_tt_base::create_font(const char_type* typeface_, glyph_rendering ren_type)
     {
         if(m_dc)
         {
-            unsigned len = strlen(typeface_);
-            if(len > m_typeface_len)
-            {
-                delete [] m_signature;
-                delete [] m_typeface;
-                m_typeface  = new char [len + 32];
-                m_signature = new char [len + 32 + 256];
-                m_typeface_len = len + 32 - 1;
-            }
-
-            strcpy(m_typeface, typeface_);
-
+			m_str_typeface = typeface_;
+			m_str_signature.resize(m_str_typeface.length() + 256, 0);
+            
             int h = m_height;
             int w = m_width;
 
@@ -454,7 +437,7 @@ namespace agg
 
             m_glyph_rendering = ren_type;
             update_signature();
-            int idx = find_font(m_signature);
+            int idx = find_font(m_str_signature.c_str());
             if(idx >= 0)
             {
                 m_cur_font = m_fonts[idx];
@@ -477,7 +460,7 @@ namespace agg
                                           CLIP_DEFAULT_PRECIS,    // clipping precision
                                           ANTIALIASED_QUALITY,    // output quality
                                           m_pitch_and_family,     // pitch and family
-                                          m_typeface);            // typeface name
+                                          m_str_typeface.c_str());            // typeface name
                 if(m_cur_font)
                 {
                     if(m_num_fonts >= m_max_fonts)
@@ -485,18 +468,14 @@ namespace agg
                         delete [] m_font_names[0];
                         if(m_old_font) ::SelectObject(m_dc, m_old_font);
                         ::DeleteObject(m_fonts[0]);
-                        memcpy(m_fonts, 
-                               m_fonts + 1, 
-                               (m_max_fonts - 1) * sizeof(HFONT));
-                        memcpy(m_font_names, 
-                               m_font_names + 1, 
-                               (m_max_fonts - 1) * sizeof(char*));
+                        memcpy(m_fonts, m_fonts + 1, (m_max_fonts - 1) * sizeof(HFONT));
+                        memcpy(m_font_names, m_font_names + 1, (m_max_fonts - 1) * sizeof(char*));
                         m_num_fonts = m_max_fonts - 1;
                     }
 
                     update_signature();
-                    m_font_names[m_num_fonts] = new char[strlen(m_signature) + 1];
-                    strcpy(m_font_names[m_num_fonts], m_signature);
+                    m_font_names[m_num_fonts] = new char_type[m_str_signature.length() + 1];
+					_tcscpy(m_font_names[m_num_fonts], m_str_signature.c_str());
                     m_fonts[m_num_fonts] = m_cur_font;
                     ++m_num_fonts;
                     ::SelectObject(m_dc, m_cur_font);
@@ -508,12 +487,8 @@ namespace agg
         return false;
     }
 
-
-
-
-
     //------------------------------------------------------------------------
-    bool font_engine_win32_tt_base::create_font(const char* typeface_, 
+    bool font_engine_win32_tt_base::create_font(const char_type* typeface_, 
                                                 glyph_rendering ren_type,
                                                 double height_,
                                                 double width_,
@@ -531,13 +506,12 @@ namespace agg
         return create_font(typeface_, ren_type);
     }
 
-
-
-
     //------------------------------------------------------------------------
     void font_engine_win32_tt_base::update_signature()
     {
-        m_signature[0] = 0;
+        m_str_signature[0] = 0;
+		char_type afine_buf[100] = _T("");
+
         if(m_dc && m_cur_font)
         {
             unsigned gamma_hash = 0;
@@ -545,18 +519,27 @@ namespace agg
                m_glyph_rendering == glyph_ren_agg_mono || 
                m_glyph_rendering == glyph_ren_agg_gray8)
             {
-                unsigned char gamma_table[rasterizer_scanline_aa<>::aa_scale];
+                byte_type gamma_table[rasterizer_scanline_aa<>::aa_scale];
                 unsigned i;
                 for(i = 0; i < rasterizer_scanline_aa<>::aa_scale; ++i)
-                {
                     gamma_table[i] = m_rasterizer.apply_gamma(i);
-                }
+
                 gamma_hash = calc_crc32(gamma_table, sizeof(gamma_table));
             }
+			if( m_glyph_rendering == glyph_ren_outline ||
+				m_glyph_rendering == glyph_ren_agg_mono ||
+				m_glyph_rendering == glyph_ren_agg_gray8)
+			{
+				double mtx[6];
+				m_affine.store_to(mtx);
+				_stprintf(afine_buf, _T(",%08X%08X%08X%08X%08X%08X"), 
+					dbl_to_plain_fx(mtx[0]), dbl_to_plain_fx(mtx[1]), dbl_to_plain_fx(mtx[2]), 
+					dbl_to_plain_fx(mtx[3]), dbl_to_plain_fx(mtx[4]), dbl_to_plain_fx(mtx[5]));
+			}
       
-            sprintf(m_signature, 
-                    "%s,%u,%d,%d:%dx%d,%d,%d,%d,%d,%d,%08X", 
-                    m_typeface,
+            _stprintf(&m_str_signature[0], 
+                    _T("%s,%u,%d,%d:%dx%d,%d,%d,%d,%d,%d,%08X,%s"), 
+                    m_str_typeface.c_str(),
                     m_char_set,
                     int(m_glyph_rendering),
                     m_resolution,
@@ -567,24 +550,9 @@ namespace agg
                     int(m_hinting),
                     int(m_flip_y),
                     int(m_pitch_and_family),
-                    gamma_hash);
+                    gamma_hash, afine_buf);
 
-            if(m_glyph_rendering == glyph_ren_outline ||
-               m_glyph_rendering == glyph_ren_agg_mono ||
-               m_glyph_rendering == glyph_ren_agg_gray8)
-            {
-                double mtx[6];
-                char buf[100];
-                m_affine.store_to(mtx);
-                sprintf(buf, ",%08X%08X%08X%08X%08X%08X", 
-                    dbl_to_plain_fx(mtx[0]), 
-                    dbl_to_plain_fx(mtx[1]), 
-                    dbl_to_plain_fx(mtx[2]), 
-                    dbl_to_plain_fx(mtx[3]), 
-                    dbl_to_plain_fx(mtx[4]), 
-                    dbl_to_plain_fx(mtx[5]));
-                strcat(m_signature, buf);
-            }
+
             ++m_change_stamp;
         }
     }
@@ -630,13 +598,13 @@ namespace agg
             if(!m_hinting) format |= GGO_UNHINTED;
         
             GLYPHMETRICS gm;
-            int total_size = GetGlyphOutline(m_dc, glyph_code, format, &gm, buf_size, (void*)m_gbuf, &m_matrix);
+            int total_size = GetGlyphOutline(m_dc, glyph_code, format, &gm, m_gbuffer.size(), (void*)&m_gbuffer[0], &m_matrix);
 
             if(total_size < 0) 
             {
                 // GetGlyphOutline() fails when being called for GGO_GRAY8_BITMAP and white space (stupid Microsoft).
                 // It doesn't even initialize the glyph metrics structure. So, we have to query the metrics separately (basically we need gmCellIncX).
-                int total_size = GetGlyphOutline(m_dc, glyph_code, GGO_METRICS, &gm, buf_size, (void*)m_gbuf, &m_matrix);
+                int total_size = GetGlyphOutline(m_dc, glyph_code, GGO_METRICS, &gm, m_gbuffer.size(), (void*)&m_gbuffer[0], &m_matrix);
                 if(total_size < 0) 
 					return false;
                 gm.gmBlackBoxX = gm.gmBlackBoxY = 0;
@@ -650,7 +618,7 @@ namespace agg
             switch(m_glyph_rendering)
             {
             case glyph_ren_native_mono: 
-                decompose_win32_glyph_bitmap_mono(m_gbuf, gm.gmBlackBoxX, gm.gmBlackBoxY, gm.gmptGlyphOrigin.x, 
+                decompose_win32_glyph_bitmap_mono(&m_gbuffer[0], gm.gmBlackBoxX, gm.gmBlackBoxY, gm.gmptGlyphOrigin.x, 
 							m_flip_y ? -gm.gmptGlyphOrigin.y : gm.gmptGlyphOrigin.y, m_flip_y, m_scanline_bin, m_scanlines_bin);
 				m_bounds = GetScanLineBounds(m_scanlines_bin);
                 m_data_size = m_scanlines_bin.byte_size(); 
@@ -658,7 +626,7 @@ namespace agg
                 return true;
 
             case glyph_ren_native_gray8:
-                decompose_win32_glyph_bitmap_gray8(m_gbuf, gm.gmBlackBoxX, gm.gmBlackBoxY, gm.gmptGlyphOrigin.x,
+                decompose_win32_glyph_bitmap_gray8(&m_gbuffer[0], gm.gmBlackBoxX, gm.gmBlackBoxY, gm.gmptGlyphOrigin.x,
 							m_flip_y ? -gm.gmptGlyphOrigin.y : gm.gmptGlyphOrigin.y, m_flip_y, m_rasterizer, m_scanline_aa, m_scanlines_aa);
 				m_bounds = GetScanLineBounds(m_scanlines_aa);
                 m_data_size = m_scanlines_aa.byte_size(); 
@@ -670,7 +638,7 @@ namespace agg
                 if(m_flag32)
                 {
                     m_path32.remove_all();
-                    if(decompose_win32_glyph_outline(m_gbuf, total_size, m_flip_y, m_affine, m_path32))
+                    if(decompose_win32_glyph_outline(&m_gbuffer[0], total_size, m_flip_y, m_affine, m_path32))
                     {
 						m_bounds = GetPathBounds(m_path32);
                         m_data_size = m_path32.byte_size();
@@ -681,7 +649,7 @@ namespace agg
                 else
                 {
                     m_path16.remove_all();
-                    if(decompose_win32_glyph_outline(m_gbuf, total_size, m_flip_y, m_affine, m_path16))
+                    if(decompose_win32_glyph_outline(&m_gbuffer[0], total_size, m_flip_y, m_affine, m_path16))
                     {
 						m_bounds = GetPathBounds(m_path16);
                         m_data_size = m_path16.byte_size();
@@ -698,13 +666,13 @@ namespace agg
                 if(m_flag32)
                 {
                     m_path32.remove_all();
-                    decompose_win32_glyph_outline(m_gbuf, total_size, m_flip_y, m_affine, m_path32);
+                    decompose_win32_glyph_outline(&m_gbuffer[0], total_size, m_flip_y, m_affine, m_path32);
                     m_rasterizer.add_path(m_curves32);
                 }
                 else
                 {
                     m_path16.remove_all();
-                    decompose_win32_glyph_outline(m_gbuf, total_size, m_flip_y, m_affine, m_path16);
+                    decompose_win32_glyph_outline(&m_gbuffer[0], total_size, m_flip_y, m_affine, m_path16);
                     m_rasterizer.add_path(m_curves16);
                 }
 				if(m_glyph_rendering == glyph_ren_agg_mono)

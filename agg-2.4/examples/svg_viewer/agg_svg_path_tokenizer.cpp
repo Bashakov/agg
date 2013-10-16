@@ -44,7 +44,7 @@ namespace svg
 
 
     //------------------------------------------------------------------------
-    void path_tokenizer::set_path_str(const char* str)
+    void path_tokenizer::set_path_str(const char_type* str)
     {
         m_path = str;
         m_last_command = 0;
@@ -73,11 +73,8 @@ namespace svg
         while(*m_path && !is_command(*m_path) && !is_numeric(*m_path)) 
         {
             if(!is_separator(*m_path))
-            {
-                char buf[100];
-                sprintf(buf, "path_tokenizer::next : Invalid Character %c", *m_path);
-                throw exception(buf);
-            }
+                throw exception(_T("path_tokenizer::next : Invalid Character %c"), *m_path);
+
             m_path++;
         }
 
@@ -100,15 +97,12 @@ namespace svg
 
 
     //------------------------------------------------------------------------
-    double path_tokenizer::next(char cmd)
+    double path_tokenizer::next(str_type::char_type cmd)
     {
-        if(!next()) throw exception("parse_path: Unexpected end of path");
+        if(!next()) throw exception(_T("parse_path: Unexpected end of path"));
         if(last_command() != cmd)
-        {
-            char buf[100];
-            sprintf(buf, "parse_path: Command %c: bad or missing parameters", cmd);
-            throw exception(buf);
-        }
+            throw exception(_T("parse_path: Command %c: bad or missing parameters"), cmd);
+
         return last_number();
     }
 
@@ -116,8 +110,8 @@ namespace svg
     //------------------------------------------------------------------------
     bool path_tokenizer::parse_number()
     {
-        char buf[256]; // Should be enough for any number
-        char* buf_ptr = buf;
+        char_type buf[256]; // Should be enough for any number
+        char_type* buf_ptr = buf;
 
         // Copy all sign characters
 			while(buf_ptr < buf+255 && (*m_path == '-' || *m_path == '+'))
@@ -131,7 +125,7 @@ namespace svg
             *buf_ptr++ = *m_path++;
         }
         *buf_ptr = 0;
-        m_last_number = atof(buf);
+		m_last_number = _tstof(buf);
         return true;
     }
 
