@@ -25,6 +25,8 @@
 
 namespace agg
 {
+	namespace{
+
     int8u gsv_default_font[] = 
     {
         0x40,0x00,0x6c,0x0f,0x15,0x00,0x0e,0x00,0xf9,0xff,
@@ -481,6 +483,7 @@ namespace agg
         0xf7,0x00,0xff,0x7e,0x00,0x7b,0x01,0x7e,0x09,0x00,
         0xf6,0xfa,0x04,0x06,0x08,0xfa
     };
+	}
 
     //-------------------------------------------------------------------------
     gsv_text::gsv_text() :
@@ -563,7 +566,7 @@ namespace agg
     }
 
     //-------------------------------------------------------------------------
-    void gsv_text::text(const char* text)
+    void gsv_text::text(const char* text, int len)
     {
         if(text == 0)
         {
@@ -571,12 +574,12 @@ namespace agg
             m_text = m_chr;
             return;
         }
-        unsigned new_size = strlen(text) + 1;
-        if(new_size > m_text_buf.size())
-        {
-            m_text_buf.resize(new_size);
-        }
+		unsigned new_size = len? len: strlen(text);
+        if(new_size+1 > m_text_buf.size())
+            m_text_buf.resize(new_size + 1);
+
         memcpy(&m_text_buf[0], text, new_size);
+		m_text_buf[new_size] = 0;
         m_text = &m_text_buf[0];
     }
 
@@ -632,7 +635,10 @@ namespace agg
                 idx <<= 1;
                 m_bglyph = m_glyphs + value(m_indices + idx);
                 m_eglyph = m_glyphs + value(m_indices + idx + 2);
-                m_status = start_glyph;
+                
+				// !! comment or not is not significant
+				// m_status = start_glyph;
+				// break;
 
             case start_glyph:
                 *x = m_x;

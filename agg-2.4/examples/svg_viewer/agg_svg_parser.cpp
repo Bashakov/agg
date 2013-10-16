@@ -21,13 +21,14 @@
 #include <string.h>
 #include <ctype.h>
 #include "agg_svg_parser.h"
-#include "agg_gsv_text.h"
 #include "expat.h"
 
 namespace agg
 {
 namespace svg
 {
+	namespace
+	{
     struct named_color
     {
         char  name[22];
@@ -185,7 +186,7 @@ namespace svg
         { "yellowgreen",154,205,50, 255 },
         { "zzzzzzzzzzz",0,0,0, 0 }
     }; 
-
+}
 
     //------------------------------------------------------------------------
     parser::~parser()
@@ -208,7 +209,8 @@ namespace svg
         m_attr_name(new char[128]),
         m_attr_value(new char[1024]),
         m_attr_name_len(127),
-        m_attr_value_len(1023)
+        m_attr_value_len(1023),
+		m_parser_text(m_path)
     {
         m_title[0] = 0;
     }
@@ -270,14 +272,12 @@ namespace svg
         {
             self.m_title_flag = true;
         }
-        else
-        if(strcmp(el, "g") == 0)
+        else if(strcmp(el, "g") == 0)
         {
             self.m_path.push_attr();
             self.parse_attr(attr);
         }
-        else
-        if(strcmp(el, "path") == 0)
+        else if(strcmp(el, "path") == 0)
         {
             if(self.m_path_flag)
             {
@@ -288,38 +288,34 @@ namespace svg
             self.m_path.end_path();
             self.m_path_flag = true;
         }
-        else
-        if(strcmp(el, "rect") == 0) 
+        else if(strcmp(el, "rect") == 0) 
         {
             self.parse_rect(attr);
         }
-        else
-        if(strcmp(el, "line") == 0) 
+        else if(strcmp(el, "line") == 0) 
         {
             self.parse_line(attr);
         }
-        else
-        if(strcmp(el, "polyline") == 0) 
+        else if(strcmp(el, "polyline") == 0) 
         {
             self.parse_poly(attr, false);
         }
-        else
-        if(strcmp(el, "polygon") == 0) 
+        else if(strcmp(el, "polygon") == 0) 
         {
             self.parse_poly(attr, true);
         }
-			else if(strcmp(el, "circle") == 0)
-			{
-				self.parse_circle(attr);
-			}
-			else if(strcmp(el, "ellipse") == 0)
-			{
-				self.parse_ellipse(attr);
-			}
-			else if(strcmp(el, "text") == 0)
-			{
-				self.parse_text(attr);
-			}
+		else if(strcmp(el, "circle") == 0)
+		{
+			self.parse_circle(attr);
+		}
+		else if(strcmp(el, "ellipse") == 0)
+		{
+			self.parse_ellipse(attr);
+		}
+		else if(strcmp(el, "text") == 0)
+		{
+			self.parse_text_start(attr);
+		}
         //else
         //if(strcmp(el, "<OTHER_ELEMENTS>") == 0) 
         //{
@@ -347,6 +343,11 @@ namespace svg
         {
             self.m_path_flag = false;
         }
+		else 
+		if(strcmp(el, "text") == 0)
+		{
+			self.parse_text_end();
+		}
         //else
         //if(strcmp(el, "<OTHER_ELEMENTS>") == 0) 
         //{
@@ -372,6 +373,10 @@ namespace svg
                 self.m_title[self.m_title_len] = 0;
             }
         }
+		else if(self.m_parser_text.is_text_mode())
+		{
+			self.parse_text_content(s, len);
+		}
     }
 
 
@@ -456,7 +461,7 @@ namespace svg
 				{
 					throw exception("parse_color: false on '%s'", str);
 				}
-				a = (a < 1.0)? ((a > 0.0)? a: 0.0): 1.0;
+				a = (a < 1.0f)? ((a > 0.0f)? a: 0.0f): 1.0f;
 				return rgba8(r, g, b, (int8u)(255 * a));
 			}
         else
@@ -487,8 +492,6 @@ namespace svg
         while(*str == ' ') ++str;
         return atof(str);
     }
-
-
 
     //-------------------------------------------------------------
     bool parser::parse_attr(const char* name, const char* value)
@@ -587,8 +590,6 @@ namespace svg
         if(len) memcpy(m_attr_name, start, len);
         m_attr_name[len] = 0;
     }
-
-
 
     //-------------------------------------------------------------
     void parser::copy_value(const char* start, const char* end)
@@ -764,86 +765,81 @@ namespace svg
     }
 
 
-		//-------------------------------------------------------------
-		void parser::parse_circle(const char** attr)
+	//-------------------------------------------------------------
+	void parser::parse_circle(const char** attr)
+	{
+		int i;
+		double cx = 0.0;
+		double cy = 0.0;
+		double r = 0.0;
+
+		m_path.begin_path();
+		for(i = 0; attr[i]; i += 2)
 		{
-			int i;
-			double cx = 0.0;
-			double cy = 0.0;
-			double r = 0.0;
-
-			m_path.begin_path();
-			for(i = 0; attr[i]; i += 2)
+			if(!parse_attr(attr[i], attr[i + 1]))
 			{
-				if(!parse_attr(attr[i], attr[i + 1]))
-				{
-					if(strcmp(attr[i], "cx") == 0) cx = parse_double(attr[i + 1]);
-					if(strcmp(attr[i], "cy") == 0) cy = parse_double(attr[i + 1]);
-					if(strcmp(attr[i], "r") == 0) r = parse_double(attr[i + 1]);
-				}
+				if(strcmp(attr[i], "cx") == 0) cx = parse_double(attr[i + 1]);
+				if(strcmp(attr[i], "cy") == 0) cy = parse_double(attr[i + 1]);
+				if(strcmp(attr[i], "r") == 0) r = parse_double(attr[i + 1]);
 			}
-
-			m_path.move_to(cx-r, cy);
-			m_path.arc(r, r, 360, true, true, 0, .0001, true);
-			m_path.end_path();
 		}
 
+		m_path.move_to(cx-r, cy);
+		m_path.arc(r, r, 360, true, true, 0, .0001, true);
+		m_path.end_path();
+	}
 
-		void parser::parse_ellipse(const char** attr)
+
+	void parser::parse_ellipse(const char** attr)
+	{
+		int i;
+		double cx = 0.0;
+		double cy = 0.0;
+		double rx = 0.0;
+		double ry = 0.0;
+
+		m_path.begin_path();
+		for(i = 0; attr[i]; i += 2)
 		{
-			int i;
-			double cx = 0.0;
-			double cy = 0.0;
-			double rx = 0.0;
-			double ry = 0.0;
-
-			m_path.begin_path();
-			for(i = 0; attr[i]; i += 2)
+			if(!parse_attr(attr[i], attr[i + 1]))
 			{
-				if(!parse_attr(attr[i], attr[i + 1]))
-				{
-					if(strcmp(attr[i], "cx") == 0) cx = parse_double(attr[i + 1]);
-					if(strcmp(attr[i], "cy") == 0) cy = parse_double(attr[i + 1]);
-					if(strcmp(attr[i], "rx") == 0) rx = parse_double(attr[i + 1]);
-					if(strcmp(attr[i], "ry") == 0) ry = parse_double(attr[i + 1]);
-				}
+				if(strcmp(attr[i], "cx") == 0) cx = parse_double(attr[i + 1]);
+				if(strcmp(attr[i], "cy") == 0) cy = parse_double(attr[i + 1]);
+				if(strcmp(attr[i], "rx") == 0) rx = parse_double(attr[i + 1]);
+				if(strcmp(attr[i], "ry") == 0) ry = parse_double(attr[i + 1]);
 			}
-
-			m_path.move_to(cx-rx, cy);
-			m_path.arc(rx, ry, 360, true, true, 0, .0001, true);
-			m_path.end_path();
-
-// http://comments.gmane.org/gmane.comp.graphics.agg/791
-// 			bezier_arc e(cx, cy, rx, ry, 0.0, 2*pi);
-// 			m_path.add_path(e, 0, false);
-// 			m_path.close_subpath(); 
 		}
 
-		void parser::parse_text(const char** attr)
+		m_path.move_to(cx-rx, cy);
+		m_path.arc(rx, ry, 360, true, true, 0, .0001, true);
+		m_path.end_path();
+	}
+
+	//-------------------------------------------------------------
+	void parser::parse_text_start(const char** attr)
+	{
+		m_path.begin_path();
+		m_parser_text.clear_attr();
+
+		for(int i = 0; attr[i]; i += 2)
 		{
-			double x = 0.0;
-			double y = 0.0;
-
-			m_path.begin_path();
-			for(int i = 0; attr[i]; i += 2)
+			if(!parse_attr(attr[i], attr[i + 1]))
 			{
-				if(!parse_attr(attr[i], attr[i + 1]))
-				{
-					if(strcmp(attr[i], "x") == 0) x = parse_double(attr[i + 1]);
-					if(strcmp(attr[i], "y") == 0) y = parse_double(attr[i + 1]);
-				}
+				m_parser_text.parse_attr(attr[i], attr[i + 1]);
 			}
-
-			m_path.move_to(x, y);
-
-			gsv_text              text;
-			conv_stroke<gsv_text> text_poly(text);
-			text.text("test!!!");
-
-			//m_path.add_path(text_poly, 0, false);
-			//m_path.close_subpath(); 
-			m_path.end_path();
 		}
+	}
+
+	void parser::parse_text_content(const char* s, int len)
+	{
+		m_parser_text.text_content(s, len);
+	}
+
+	void parser::parse_text_end()
+	{
+		m_parser_text.text_end();
+		m_path.end_path();
+	}
 
     //-------------------------------------------------------------
     void parser::parse_transform(const char* str)

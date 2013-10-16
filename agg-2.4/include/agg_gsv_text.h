@@ -52,7 +52,7 @@ namespace agg
         void space(double space);
         void line_space(double line_space);
         void start_point(double x, double y);
-        void text(const char* text);
+        void text(const char* text, int len = 0);
         
         double text_width();
 

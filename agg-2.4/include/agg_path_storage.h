@@ -18,12 +18,14 @@
 
 #include <string.h>
 #include <math.h>
+#include "agg_gsv_text.h"
 #include "agg_math.h"
 #include "agg_array.h"
 #include "agg_bezier_arc.h"
 
 namespace agg
 {
+
 
 
     //----------------------------------------------------vertex_block_storage
@@ -717,6 +719,7 @@ namespace agg
 
         // Concatenate path. The path is added as is.
         //--------------------------------------------------------------------
+
         template<class VertexSource> 
         void concat_path(VertexSource& vs, unsigned path_id = 0)
         {
@@ -982,6 +985,21 @@ namespace agg
         }
     }
 
+// 	//------------------------------------------------------------------------
+// 	template<class VC> 
+// 	void path_base<VC>::text(double x, double y, double height, double width, const char * text, int len)
+// 	{
+// 		agg::gsv_text t;
+// 		t.size(height, width);
+// 		t.flip(true);
+// 		t.start_point(x, y);
+// 		t.text(text, len);
+// 		//concat_path(t);
+// 
+//  		agg::conv_stroke<agg::gsv_text> pt(t);
+//  		pt.width(height / 10.0);
+// 		concat_path(pt);
+// 	}
     //------------------------------------------------------------------------
     template<class VC> 
     void path_base<VC>::arc_rel(double rx, double ry,

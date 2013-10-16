@@ -10,7 +10,10 @@
 #include "ctrl/agg_slider_ctrl.h"
 #include "agg_svg_parser.h"
 
+
+//#define AGG_BGR32
 #define AGG_BGR24
+
 #include "../pixel_formats.h"
 
 enum { flip_y = false };
@@ -81,7 +84,7 @@ public:
     {
         agg::svg::parser p(m_path);
         p.parse(fname);
-        m_path.arrange_orientations();
+        //m_path.arrange_orientations();
         m_path.bounding_rect(&m_min_x, &m_min_y, &m_max_x, &m_max_y);
         caption(p.title());
     }
@@ -92,9 +95,8 @@ public:
 
     virtual void on_draw()
     {
-        typedef agg::pixfmt_bgra32 pixfmt;
-        typedef agg::renderer_base<pixfmt> renderer_base;
-        typedef agg::renderer_scanline_aa_solid<renderer_base> renderer_solid;
+         typedef agg::renderer_base<pixfmt> renderer_base;
+         typedef agg::renderer_scanline_aa_solid<renderer_base> renderer_solid;
 
         pixfmt pixf(rbuf_window());
         renderer_base rb(pixf);
@@ -125,22 +127,23 @@ public:
         agg::render_ctrl(ras, sl, rb, m_rotate);
 
 
-        char buf[128]; 
-        agg::gsv_text t;
-        t.size(10.0);
-        t.flip(true);
+		if(1)
+		{
+			char buf[128]; 
+			sprintf(buf, "Vertices=%d Time=%.3f ms", vertex_count, tm);
 
-        agg::conv_stroke<agg::gsv_text> pt(t);
-        pt.width(1.5);
+			agg::gsv_text t;
+			t.size(10.0);
+			t.flip(true);
+			t.start_point(10.0, 40.0);
+			t.text(buf);
 
-        sprintf(buf, "Vertices=%d Time=%.3f ms", vertex_count, tm);
-
-        t.start_point(10.0, 40.0);
-        t.text(buf);
-
-        ras.add_path(pt);
-        ren.color(agg::rgba(0,0,0));
-        agg::render_scanlines(ras, sl, ren);
+			agg::conv_stroke<agg::gsv_text> pt(t);
+			pt.width(1.5);
+			ras.add_path(pt);
+			ren.color(agg::rgba(0,0,0));
+			agg::render_scanlines(ras, sl, ren);
+		}
 
 
         //agg::gamma_lut<> gl(m_gamma.value());
@@ -212,9 +215,6 @@ public:
             fclose(fd);
         }
     }
-
-
-
 };
 
 
@@ -222,9 +222,9 @@ public:
 
 int agg_main(int argc, char* argv[])
 {
-    the_application app(agg::pix_format_bgra32, flip_y);
+	the_application app(pix_format, flip_y);
 
-    const char* fname = "tiger.svg";
+    const char* fname = "test.svg";
     if(argc <= 1)
     {
         FILE* fd = fopen(app.full_file_name(fname), "r");

@@ -174,7 +174,8 @@ namespace svg
 		if(rel)
 		{
 			m_storage.arc_rel(rx, ry, angle, large_arc_flag, sweep_flag, x, y);
-		} else
+		}
+		else
 		{
 			m_storage.arc_to(rx, ry, angle, large_arc_flag, sweep_flag, x, y);
 		}
@@ -218,7 +219,9 @@ namespace svg
     void path_renderer::fill(const rgba8& f)
     {
         path_attributes& attr = cur_attr();
+		rgba8::value_type a = (f.a == rgba8::base_mask)? attr.fill_color.a: f.a;
         attr.fill_color = f;
+		attr.fill_color.a = a;
         attr.fill_flag = true;
     }
 
@@ -359,8 +362,7 @@ namespace svg
 				{
 					arg[i] = tok.next(cmd);
 				}
-				arc(arg[0], arg[1], arg[2], arg[3], arg[4], arg[5], arg[6],
-					cmd == 'a');
+				arc(arg[0], arg[1], arg[2], arg[3]!=0.0, arg[4]!=0.0, arg[5], arg[6], cmd == 'a');
 				break;
 
                 case 'Z': case 'z':

@@ -159,7 +159,7 @@ namespace agg
 
         double dx = x3-x1;
         double dy = y3-y1;
-        double d = fabs(((x2 - x3) * dy - (y2 - y3) * dx));
+        double d = fabs((x2 - x3) * dy - (y2 - y3) * dx);
         double da;
 
         if(d > curve_collinearity_epsilon)
@@ -419,8 +419,8 @@ namespace agg
         double dx = x4-x1;
         double dy = y4-y1;
 
-        double d2 = fabs(((x2 - x4) * dy - (y2 - y4) * dx));
-        double d3 = fabs(((x3 - x4) * dy - (y3 - y4) * dx));
+        double d2 = fabs((x2 - x4) * dy - (y2 - y4) * dx);
+        double d3 = fabs((x3 - x4) * dy - (y3 - y4) * dx);
         double da1, da2, k;
 
         switch((int(d2 > curve_collinearity_epsilon) << 1) +

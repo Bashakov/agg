@@ -22,6 +22,8 @@
 
 #include "agg_svg_path_tokenizer.h"
 #include "agg_svg_path_renderer.h"
+#include "agg_svg_parser_text.h"
+
 
 namespace agg
 {
@@ -31,8 +33,8 @@ namespace svg
     class parser
     {
         enum buf_size_e { buf_size = BUFSIZ };
-    public:
 
+    public:
         ~parser();
         parser(path_renderer& path);
 
@@ -54,7 +56,10 @@ namespace svg
         void parse_line(const char** attr);
         void parse_style(const char* str);
         void parse_transform(const char* str);
-			void parse_text(const char** attr);
+		
+		void parse_text_start(const char** attr);
+		void parse_text_content(const char* s, int len);
+		void parse_text_end();
 
         unsigned parse_matrix(const char* str);
         unsigned parse_translate(const char* str);
@@ -80,6 +85,7 @@ namespace svg
         char*          m_attr_value;
         unsigned       m_attr_name_len;
         unsigned       m_attr_value_len;
+		parser_text    m_parser_text;
     };
 
 }

@@ -3,7 +3,7 @@
 	ProjectType="Visual C++"
 	Version="9,00"
 	Name="svg_test"
-	ProjectGUID="{06EA72F2-BAEA-4A74-84E9-31543450B6AD}"
+	ProjectGUID="{4967FC28-789A-4401-928A-8BE22B209DF9}"
 	TargetFrameworkVersion="0"
 	>
 	<Platforms>
@@ -116,7 +116,7 @@
 			InheritedPropertySheets="$(VCInstallDir)VCProjectDefaults\UpgradeFromVC60.vsprops"
 			UseOfMFC="0"
 			ATLMinimizesCRunTimeLibraryUsage="false"
-			CharacterSet="2"
+			CharacterSet="0"
 			>
 			<Tool
 				Name="VCPreBuildEventTool"
@@ -257,6 +257,10 @@
 				</FileConfiguration>
 			</File>
 			<File
+				RelativePath="..\..\..\font_win32_tt\agg_font_win32_tt.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\..\src\agg_gsv_text.cpp"
 				>
 				<FileConfiguration
@@ -343,6 +347,10 @@
 						PreprocessorDefinitions=""
 					/>
 				</FileConfiguration>
+			</File>
+			<File
+				RelativePath="..\..\svg_viewer\agg_svg_parser_text.cpp"
+				>
 			</File>
 			<File
 				RelativePath="..\..\svg_viewer\agg_svg_path_renderer.cpp"
@@ -504,11 +512,31 @@
 			Filter="h;hpp;hxx;hm;inl"
 			>
 			<File
+				RelativePath="..\..\..\include\agg_array.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\font_win32_tt\agg_font_win32_tt.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\include\agg_math_stroke.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\include\agg_rasterizer_sl_clip.h"
+				>
+			</File>
+			<File
 				RelativePath="..\..\svg_viewer\agg_svg_exception.h"
 				>
 			</File>
 			<File
 				RelativePath="..\..\svg_viewer\agg_svg_parser.h"
+				>
+			</File>
+			<File
+				RelativePath="..\..\svg_viewer\agg_svg_parser_text.h"
 				>
 			</File>
 			<File
