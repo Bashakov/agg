@@ -10,7 +10,10 @@
 #include "ctrl/agg_slider_ctrl.h"
 #include "agg_svg_parser.h"
 
+
+//#define AGG_BGR32
 #define AGG_BGR24
+
 #include "../pixel_formats.h"
 
 enum { flip_y = false };
@@ -92,9 +95,8 @@ public:
 
     virtual void on_draw()
     {
-        typedef agg::pixfmt_bgra32 pixfmt;
-        typedef agg::renderer_base<pixfmt> renderer_base;
-        typedef agg::renderer_scanline_aa_solid<renderer_base> renderer_solid;
+         typedef agg::renderer_base<pixfmt> renderer_base;
+         typedef agg::renderer_scanline_aa_solid<renderer_base> renderer_solid;
 
         pixfmt pixf(rbuf_window());
         renderer_base rb(pixf);
@@ -202,9 +204,6 @@ public:
             fclose(fd);
         }
     }
-
-
-
 };
 
 
@@ -212,9 +211,9 @@ public:
 
 int agg_main(int argc, char* argv[])
 {
-    the_application app(agg::pix_format_bgra32, flip_y);
+	the_application app(pix_format, flip_y);
 
-    const char* fname = "tiger.svg";
+    const char* fname = "test.svg";
     if(argc <= 1)
     {
         FILE* fd = fopen(app.full_file_name(fname), "r");

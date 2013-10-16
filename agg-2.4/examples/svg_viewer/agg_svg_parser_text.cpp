@@ -22,6 +22,7 @@ namespace svg
 		: m_path(path)
 		, m_feng(GetDC(NULL))
 		, m_fman(m_feng)
+		, m_curves(m_fman.path_adaptor())
 	{
 		m_text.init(false);
 		m_feng.gamma(agg::gamma_none());
@@ -49,60 +50,18 @@ namespace svg
 		m_feng.flip_y(true);
 		m_feng.italic(false);
 		
-		if(1 && m_feng.create_font(m_text.family, m_text.gren) )
+		if( m_feng.create_font(m_text.family, m_text.gren) )
 		{
 			double x = m_text.x;
 			double y = m_text.y;
 			for (; *s && len; ++s, --len)
 			{
 				const agg::glyph_cache* glyph = m_fman.glyph(*s);
-				if( !glyph )
+				if( !glyph || glyph->data_type != glyph_data_outline)
 					break;
 
 				m_fman.init_embedded_adaptors(glyph, x, y);
-
-				switch(glyph->data_type)
-				{
-				case agg::glyph_data_mono:
-					// 					ren_bin.color(agg::srgba8(0, 0, 0));
-					// 					agg::render_scanlines(m_fman.mono_adaptor(), m_fman.mono_scanline(), ren_bin);
-					break;
-
-				case agg::glyph_data_gray8:
-					// 					ren_solid.color(agg::srgba8(0, 0, 0));
-					// 					agg::render_scanlines(m_fman.gray8_adaptor(), 
-					// 						m_fman.gray8_scanline(), 
-					// 						ren_solid);
-					break;
-
-				case agg::glyph_data_outline:
-					{
-						// Pipeline to process the vectors glyph paths (curves + contour)
-						 typedef conv_curve<font_manager_type::path_adaptor_type> conv_curve_type;
-						// typedef conv_contour<conv_curve_type>			conv_contour_type;
-
-						conv_curve_type		curves(m_fman.path_adaptor());
-						//conv_contour_type	contour(curves);
-
-						//contour.width( -m_text.weight * m_text.height * 0.05);
-						
-						m_path.concat_path( curves );
-						//m_path.concat_path( m_fman.path_adaptor() );
-
-	// 					if(fabs(m_text.weight) <= 0.01)
-	// 					{
-	// 						// For the sake of efficiency skip the
-	// 						// contour converter if the weight is about zero.
-	// 						//-----------------------
-	// 						m_path.concat_path(m_curves);
-	// 					}
-	// 					else
-	// 					{
-	// 						m_path.concat_path(m_contour);
-	// 					}
-					}
-					break;
-				}
+				m_path.concat_path( m_curves );
 
 				// increment pen position
 				x += glyph->advance_x;

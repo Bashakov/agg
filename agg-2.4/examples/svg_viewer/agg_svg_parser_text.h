@@ -26,9 +26,9 @@ namespace svg
 			void init(bool in_tag);
 		};
 
-		typedef font_engine_win32_tt_int32				font_engine_type;
-		typedef font_cache_manager<font_engine_type>	font_manager_type;
-
+		typedef font_engine_win32_tt_int32							font_engine_type;
+		typedef font_cache_manager<font_engine_type>				font_manager_type;
+		typedef conv_curve<font_manager_type::path_adaptor_type>	conv_curve_type;		// Pipeline to process the vectors glyph paths
 	public:
 		parser_text(path_renderer & path);
 
@@ -42,6 +42,7 @@ namespace svg
 		path_renderer	&	m_path;
 		font_engine_type    m_feng;
 		font_manager_type   m_fman;
+		conv_curve_type		m_curves;
 		text_desc			m_text;
 	};
 }
