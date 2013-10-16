@@ -230,8 +230,7 @@ int agg_main(int argc, char* argv[])
         FILE* fd = fopen(app.full_file_name(fname), "r");
         if(fd == 0)
         {
-            app.message("Usage: svg_test <svg_file>\n"
-                        "Download http://antigrain.com/svg/tiger.svg");
+            app.message("Usage: svg_test <svg_file>\nDownload http://antigrain.com/svg/tiger.svg");
             return 1;
         }
         fclose(fd);
@@ -259,4 +258,20 @@ int agg_main(int argc, char* argv[])
 }
 
 
+#include <stdarg.h>
+#include <stdio.h>
+//void OutputDebugStringA(const char * lpOutputString);
+#include <Windows.h>
+#pragma comment( lib, "kernel32")
+
+void DbgOut(const char* szFormat, ...)
+{
+	char szBuff[1024];
+	va_list arg;
+	va_start(arg, szFormat);
+	_vsnprintf(szBuff, sizeof(szBuff), szFormat, arg);
+	va_end(arg);
+
+	OutputDebugStringA(szBuff);
+};
 
