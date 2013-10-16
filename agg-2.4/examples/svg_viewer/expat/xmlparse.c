@@ -988,27 +988,19 @@ XML_ExternalEntityParserCreate(XML_Parser oldParser,
   XML_StartElementHandler oldStartElementHandler = startElementHandler;
   XML_EndElementHandler oldEndElementHandler = endElementHandler;
   XML_CharacterDataHandler oldCharacterDataHandler = characterDataHandler;
-  XML_ProcessingInstructionHandler oldProcessingInstructionHandler
-      = processingInstructionHandler;
+  XML_ProcessingInstructionHandler oldProcessingInstructionHandler = processingInstructionHandler;
   XML_CommentHandler oldCommentHandler = commentHandler;
-  XML_StartCdataSectionHandler oldStartCdataSectionHandler
-      = startCdataSectionHandler;
-  XML_EndCdataSectionHandler oldEndCdataSectionHandler
-      = endCdataSectionHandler;
+  XML_StartCdataSectionHandler oldStartCdataSectionHandler = startCdataSectionHandler;
+  XML_EndCdataSectionHandler oldEndCdataSectionHandler = endCdataSectionHandler;
   XML_DefaultHandler oldDefaultHandler = defaultHandler;
-  XML_UnparsedEntityDeclHandler oldUnparsedEntityDeclHandler
-      = unparsedEntityDeclHandler;
+  XML_UnparsedEntityDeclHandler oldUnparsedEntityDeclHandler = unparsedEntityDeclHandler;
   XML_NotationDeclHandler oldNotationDeclHandler = notationDeclHandler;
-  XML_StartNamespaceDeclHandler oldStartNamespaceDeclHandler
-      = startNamespaceDeclHandler;
-  XML_EndNamespaceDeclHandler oldEndNamespaceDeclHandler
-      = endNamespaceDeclHandler;
+  XML_StartNamespaceDeclHandler oldStartNamespaceDeclHandler = startNamespaceDeclHandler;
+  XML_EndNamespaceDeclHandler oldEndNamespaceDeclHandler = endNamespaceDeclHandler;
   XML_NotStandaloneHandler oldNotStandaloneHandler = notStandaloneHandler;
-  XML_ExternalEntityRefHandler oldExternalEntityRefHandler
-      = externalEntityRefHandler;
+  XML_ExternalEntityRefHandler oldExternalEntityRefHandler = externalEntityRefHandler;
   XML_SkippedEntityHandler oldSkippedEntityHandler = skippedEntityHandler;
-  XML_UnknownEncodingHandler oldUnknownEncodingHandler
-      = unknownEncodingHandler;
+  XML_UnknownEncodingHandler oldUnknownEncodingHandler = unknownEncodingHandler;
   XML_ElementDeclHandler oldElementDeclHandler = elementDeclHandler;
   XML_AttlistDeclHandler oldAttlistDeclHandler = attlistDeclHandler;
   XML_EntityDeclHandler oldEntityDeclHandler = entityDeclHandler;
@@ -3427,18 +3419,9 @@ processXmlDecl(XML_Parser parser, int isGeneralTextEntity,
   const char *versionend;
   const XML_Char *storedversion = NULL;
   int standalone = -1;
-  if (!(ns
-        ? XmlParseXmlDeclNS
-        : XmlParseXmlDecl)(isGeneralTextEntity,
-                           encoding,
-                           s,
-                           next,
-                           &eventPtr,
-                           &version,
-                           &versionend,
-                           &encodingName,
-                           &newEncoding,
-                           &standalone)) {
+  if (!(ns? XmlParseXmlDeclNS: XmlParseXmlDecl)(isGeneralTextEntity, encoding,
+				s, next, &eventPtr, &version, &versionend, &encodingName, &newEncoding, &standalone)) 
+  {
     if (isGeneralTextEntity)
       return XML_ERROR_TEXT_DECL;
     else

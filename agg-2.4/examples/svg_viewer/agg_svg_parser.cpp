@@ -22,6 +22,7 @@
 #include <ctype.h>
 #include "agg_svg_parser.h"
 #include "expat.h"
+#include "unkenc.h"
 
 namespace agg
 {
@@ -228,6 +229,7 @@ namespace svg
         XML_SetUserData(p, this);
 	    XML_SetElementHandler(p, start_element, end_element);
 	    XML_SetCharacterDataHandler(p, content);
+		XML_SetUnknownEncodingHandler(p, unknownEncoding, NULL);
 
         FILE* fd = fopen(fname, "r");
         if(fd == 0)
