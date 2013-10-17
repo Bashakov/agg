@@ -1,0 +1,11 @@
+Debug
+
+Release
+
+*.user
+
+*.ncb
+
+*.vsp
+
+*.suo
