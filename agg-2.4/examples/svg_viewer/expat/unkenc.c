@@ -306,15 +306,19 @@ int XMLCALL unknownEncoding( void * encodingHandlerData, const XML_Char * name, 
 	const char * encName = name;
 #endif
 
-	lng = (lang_t*)bsearch( encName, langs, sizeof(langs) / sizeof(lang_t), sizeof(lang_t), myCmp );
+	lng = (lang_t*)bsearch( encName, langs, sizeof(langs)/sizeof(lang_t), sizeof(lang_t), myCmp );
 	if( !lng )
 		return XML_STATUS_ERROR;
+
 	if( 1 != GetCPInfo( lng->codepage_id, &cpInfo ) )
 		return XML_STATUS_ERROR;
+
 	if( 1 != cpInfo.MaxCharSize )
 		return XML_STATUS_ERROR;
+
 	if( !MultiByteToWideChar( lng->codepage_id, 0, allChars, 0x100, conv, 0x100 ) )
 		return XML_STATUS_ERROR;
+
 	for( i = 0; i < sizeof(allChars); ++i )
 		info->map[i] = conv[i];
 	return XML_STATUS_OK;

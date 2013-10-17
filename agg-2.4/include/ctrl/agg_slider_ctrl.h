@@ -37,7 +37,8 @@ namespace agg
     //--------------------------------------------------------slider_ctrl_impl
     class slider_ctrl_impl : public ctrl
     {
-		typedef str_type::char_type	char_type;
+		typedef str_type::char_type		char_type;
+		typedef str_type::string_type	string_type;
     public:
         slider_ctrl_impl(double x1, double y1, double x2, double y2, bool flip_y=false);
 
@@ -45,7 +46,7 @@ namespace agg
 
         void range(double min, double max) { m_min = min; m_max = max; }
         void num_steps(unsigned num) { m_num_steps = num; }
-        void label(const char* fmt);
+        void label(const char_type* fmt);
         void text_thickness(double t) { m_text_thickness = t; }
 
         bool descending() const { return m_descending; }
@@ -69,29 +70,29 @@ namespace agg
         void calc_box();
         bool normalize_value(bool preview_value_flag);
 
-        double   m_border_width;
-        double   m_border_extra;
-        double   m_text_thickness;
-        double   m_value;
-        double   m_preview_value;
-        double   m_min;
-        double   m_max;
-        unsigned m_num_steps;
-        bool     m_descending;
-        char_type     m_label[64];
-        double   m_xs1;
-        double   m_ys1;
-        double   m_xs2;
-        double   m_ys2;
-        double   m_pdx;
-        bool     m_mouse_move;
-        double   m_vx[32];
-        double   m_vy[32];
+        double		m_border_width;
+        double		m_border_extra;
+        double		m_text_thickness;
+        double		m_value;
+        double		m_preview_value;
+        double		m_min;
+        double		m_max;
+        unsigned	m_num_steps;
+        bool		m_descending;
+        string_type	m_str_format;
+        double		m_xs1;
+        double		m_ys1;
+        double		m_xs2;
+        double		m_ys2;
+        double		m_pdx;
+        bool		m_mouse_move;
+        double		m_vx[32];
+        double		m_vy[32];
 
-        ellipse  m_ellipse;
+        ellipse		m_ellipse;
 
-        unsigned m_idx;
-        unsigned m_vertex;
+        unsigned	m_idx;
+        unsigned	m_vertex;
 
         gsv_text              m_text;
         conv_stroke<gsv_text> m_text_poly;

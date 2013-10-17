@@ -39,9 +39,9 @@ namespace agg
         m_max(1.0),
         m_num_steps(0),
         m_descending(false),
+		m_str_format(_T("")),
         m_text_poly(m_text)
     {
-        m_label[0] = 0;
         calc_box();
     }
 
@@ -98,16 +98,9 @@ namespace agg
     }
 
     //------------------------------------------------------------------------
-    void slider_ctrl_impl::label(const char* fmt)
+    void slider_ctrl_impl::label(const char_type* fmt)
     {
-        m_label[0] = 0;
-        if(fmt)
-        {
-            unsigned len = strlen(fmt);
-            if(len > 63) len = 63;
-            memcpy(m_label, fmt, len);
-            m_label[len] = 0;
-        }
+		m_str_format = fmt;
     }
 
     //------------------------------------------------------------------------
@@ -158,11 +151,11 @@ namespace agg
             break;
 
         case 2:
-            m_text.text(m_label);
-            if(m_label[0])
+            m_text.text(m_str_format.c_str());
+            if(m_str_format.length() > 2)
             {
                 char_type buf[256];
-				_stprintf (buf, m_label, value());
+				_stprintf (buf, m_str_format.c_str(), value());
                 m_text.text(buf);
             }
             m_text.start_point(m_x1, m_y1);

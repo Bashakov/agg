@@ -10,9 +10,9 @@
 #include "ctrl/agg_slider_ctrl.h"
 #include "agg_svg_parser.h"
 
-
-//#define AGG_BGR32
-#define AGG_BGR24
+//#define AGG_SBGRA32
+//#define AGG_BGR24
+#define AGG_SBGR24
 
 #include "../pixel_formats.h"
 
@@ -63,19 +63,19 @@ public:
         add_ctrl(m_scale);
         add_ctrl(m_rotate);
 
-        m_expand.label("Expand=%3.2f");
+        m_expand.label(_T("Expand=%3.2f"));
         m_expand.range(-1, 1.2);
         m_expand.value(0.0);
 
-        m_gamma.label("Gamma=%3.2f");
+        m_gamma.label(_T("Gamma=%3.2f"));
         m_gamma.range(0.0, 3.0);
         m_gamma.value(1.0);
 
-        m_scale.label("Scale=%3.2f");
+        m_scale.label(_T("Scale=%3.2f"));
         m_scale.range(0.2, 10.0);
         m_scale.value(1.0);
 
-        m_rotate.label("Rotate=%3.2f");
+        m_rotate.label(_T("Rotate=%3.2f"));
         m_rotate.range(-180.0, 180.0);
         m_rotate.value(0.0);
     }
