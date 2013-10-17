@@ -28,23 +28,29 @@
 #include "agg_svg_parser_text.h"
 
 
-
 namespace agg
 {
 namespace svg
 {
+	class utf_convertor
+	{
+		//typedef str_type::string_type		string_type;
+		typedef str_type::char_type			char_type;
+	public:
+		typedef std::pair<const char_type *, size_t>	adapter;
 
-	typedef TCHAR				char_type;
-#ifdef _UNICODE
-	typedef std::wstring		string_type;
-#else
-	typedef std::string			string_type;
-#endif
+		utf_convertor();
+		adapter convert(const char_type * utf_str, size_t len = 0);
+	private:
+		std::string		m_buffer;
+		std::wstring	m_wideBuffer;
+	};
 	
     class parser
     {
         enum buf_size_e { buf_size = BUFSIZ };
-
+		typedef str_type::char_type			char_type;
+		typedef str_type::string_type		string_type;
     public:
         ~parser();
         parser(path_renderer& path);
@@ -94,6 +100,7 @@ namespace svg
         unsigned       m_attr_name_len;
         unsigned       m_attr_value_len;
 		parser_text    m_parser_text;
+		utf_convertor  m_utf_convertor;
     };
 
 }

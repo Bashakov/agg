@@ -33,7 +33,7 @@ namespace svg
 	{
     struct named_color
     {
-        char_type  name[22];
+        str_type::char_type  name[22];
         int8u r, g, b, a;
     };
 
@@ -191,6 +191,33 @@ namespace svg
 }
 
     //------------------------------------------------------------------------
+
+	utf_convertor::utf_convertor()
+	{
+		m_buffer.resize(1024);
+		m_wideBuffer.resize(1024);
+	}
+
+	utf_convertor::adapter utf_convertor::convert(const char_type * utf_str, size_t utf_len /*= 0*/)
+	{
+#ifndef _UNICODE 
+		if( !utf_len )
+			utf_len = _tcslen(utf_str);
+
+		int wbuflen = MultiByteToWideChar(CP_UTF8, 0, utf_str, utf_len, 0, 0);
+		m_wideBuffer.resize(wbuflen);
+		MultiByteToWideChar(CP_UTF8, 0, utf_str, utf_len, &m_wideBuffer[0], m_wideBuffer.size());
+
+		int buflen = WideCharToMultiByte(1251, 0, &m_wideBuffer[0], m_wideBuffer.size(), 0, 0, 0, 0);
+		m_buffer.resize(buflen);
+		WideCharToMultiByte(1251, 0, &m_wideBuffer[0], m_wideBuffer.size(), &m_buffer[0], m_buffer.size(), 0, 0);
+		return adapter(m_buffer.c_str(), m_buffer.size());
+#else
+		return adapter(utf_str, utf_len); // utf-16 string almoust UCS2, pass without convertion
+#endif
+	}
+
+	//------------------------------------------------------------------------
     parser::~parser()
     {
     }
@@ -267,9 +294,8 @@ namespace svg
         else if(_tcscmp(el, _T("path")) == 0)
         {
             if(self.m_path_flag)
-            {
                 throw exception(_T("start_element: Nested path"));
-            }
+
             self.m_path.begin_path();
             self.parse_path(attr);
             self.m_path.end_path();
@@ -344,19 +370,20 @@ namespace svg
 
 
     //------------------------------------------------------------------------
-    void parser::content(void* data, const char_type* s, int len)
+    void parser::content(void* data, const char_type* utf_str, int utf_len)
     {
         parser& self = *(parser*)data;
+		utf_convertor::adapter str = self.m_utf_convertor.convert(utf_str, utf_len);
 
         // m_title_flag signals that the <title> tag is being parsed now.
         // The following code concatenates the pieces of content of the <title> tag.
         if(self.m_title_flag)
         {
-			self.m_str_title.assign(s, s + len);
+			self.m_str_title.assign(str.first, str.first + str.second);
         }
 		else if(self.m_parser_text.is_text_mode())
 		{
-			self.parse_text_content(s, len);
+			self.parse_text_content(str.first, str.second);
 		}
     }
 
@@ -416,7 +443,7 @@ namespace svg
     }
 
     //-------------------------------------------------------------
-    rgba8 parse_color(const char_type* str)
+    rgba8 parse_color(const str_type::char_type* str)
     {
         while(*str == _T(' ')) ++str;
         unsigned c = 0;
@@ -463,7 +490,7 @@ namespace svg
         }
     }
 
-    double parse_double(const char_type* str)
+    double parse_double(const str_type::char_type* str)
     {
         while(*str == _T(' ')) ++str;
 		return _tstof(str);
@@ -810,25 +837,25 @@ namespace svg
 
 
     //-------------------------------------------------------------
-    static bool is_numeric(char_type c)
+    static bool is_numeric(str_type::char_type c)
     {
 		return _tcschr(_T("0123456789+-.eE"), c) != 0;
     }
 
     //-------------------------------------------------------------
-    static unsigned parse_transform_args(const char_type* str, 
+    static unsigned parse_transform_args(const str_type::char_type* str, 
                                          double* args, 
                                          unsigned max_na, 
                                          unsigned* na)
     {
         *na = 0;
-        const char_type* ptr = str;
+        const str_type::char_type* ptr = str;
         while(*ptr && *ptr != _T('(')) ++ptr;
         if(*ptr == 0)
         {
             throw exception( _T("parse_transform_args: Invalid syntax"));
         }
-        const char_type* end = ptr;
+        const str_type::char_type* end = ptr;
         while(*end && *end != _T(')')) ++end;
         if(*end == 0)
         {
