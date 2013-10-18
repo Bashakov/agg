@@ -1,11 +1,8 @@
 Debug
-
 Release
-
 *.user
-
+*.manifest
+BuildLog.htm
 *.ncb
-
 *.vsp
-
 *.suo

@@ -61,7 +61,8 @@ namespace svg
 					break;
 
 				m_fman.init_embedded_adaptors(glyph, x, y);
-				m_path.concat_path( m_curves );
+				//m_path.concat_path( m_curves );
+				m_path.concat_path( m_fman.path_adaptor() );
 
 				// increment pen position
 				x += glyph->advance_x;
