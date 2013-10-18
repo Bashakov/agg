@@ -466,11 +466,23 @@
 			Name="shape"
 			>
 			<File
+				RelativePath="..\src\agg_arc.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\include\agg_arc.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\agg_bezier_arc.cpp"
 				>
 			</File>
 			<File
 				RelativePath="..\include\agg_bezier_arc.h"
+				>
+			</File>
+			<File
+				RelativePath="..\include\agg_bounding_rect.h"
 				>
 			</File>
 			<File
@@ -487,6 +499,10 @@
 			</File>
 			<File
 				RelativePath="..\include\agg_gsv_text.h"
+				>
+			</File>
+			<File
+				RelativePath="..\src\agg_rounded_rect.cpp"
 				>
 			</File>
 		</Filter>
