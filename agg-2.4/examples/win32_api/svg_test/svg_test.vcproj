@@ -4,6 +4,7 @@
 	Version="9,00"
 	Name="svg_test"
 	ProjectGUID="{06EA72F2-BAEA-4A74-84E9-31543450B6AD}"
+	RootNamespace="svg_test"
 	TargetFrameworkVersion="0"
 	>
 	<Platforms>
@@ -214,6 +215,14 @@
 			Filter="cpp;c;cxx;rc;def;r;odl;idl;hpj;bat"
 			>
 			<File
+				RelativePath="..\..\..\src\platform\win32\agg_platform_support.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\..\..\src\ctrl\agg_slider_ctrl.cpp"
+				>
+			</File>
+			<File
 				RelativePath="..\..\svg_viewer\svg_test.cpp"
 				>
 				<FileConfiguration
@@ -240,6 +249,10 @@
 			Name="Header Files"
 			Filter="h;hpp;hxx;hm;inl"
 			>
+			<File
+				RelativePath="..\..\..\include\platform\agg_platform_support.h"
+				>
+			</File>
 		</Filter>
 		<Filter
 			Name="Resource Files"

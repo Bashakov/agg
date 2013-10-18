@@ -3,10 +3,12 @@ Microsoft Visual Studio Solution File, Format Version 10.00
 # Visual Studio 2008
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "svg_test", "svg_test.vcproj", "{06EA72F2-BAEA-4A74-84E9-31543450B6AD}"
 	ProjectSection(ProjectDependencies) = postProject
-		{4884819A-6450-4BF6-830A-42C4A8D15EE0} = {4884819A-6450-4BF6-830A-42C4A8D15EE0}
+		{7993BCEB-2FD3-4BF0-96CF-C636B6DD2919} = {7993BCEB-2FD3-4BF0-96CF-C636B6DD2919}
 	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "lib", "..\..\svg_viewer\lib\lib.vcproj", "{4884819A-6450-4BF6-830A-42C4A8D15EE0}"
+EndProject
+Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "agg_lib", "..\..\..\agg_lib\agg_lib.vcproj", "{7993BCEB-2FD3-4BF0-96CF-C636B6DD2919}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -22,6 +24,10 @@ Global
 		{4884819A-6450-4BF6-830A-42C4A8D15EE0}.Debug|Win32.Build.0 = Debug|Win32
 		{4884819A-6450-4BF6-830A-42C4A8D15EE0}.Release|Win32.ActiveCfg = Release|Win32
 		{4884819A-6450-4BF6-830A-42C4A8D15EE0}.Release|Win32.Build.0 = Release|Win32
+		{7993BCEB-2FD3-4BF0-96CF-C636B6DD2919}.Debug|Win32.ActiveCfg = Debug|Win32
+		{7993BCEB-2FD3-4BF0-96CF-C636B6DD2919}.Debug|Win32.Build.0 = Debug|Win32
+		{7993BCEB-2FD3-4BF0-96CF-C636B6DD2919}.Release|Win32.ActiveCfg = Release|Win32
+		{7993BCEB-2FD3-4BF0-96CF-C636B6DD2919}.Release|Win32.Build.0 = Release|Win32
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

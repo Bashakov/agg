@@ -254,10 +254,6 @@
 				RelativePath="..\..\..\src\platform\win32\agg_win32_bmp.cpp"
 				>
 			</File>
-			<File
-				RelativePath="..\StringConvertor.h"
-				>
-			</File>
 		</Filter>
 		<Filter
 			Name="expat"
