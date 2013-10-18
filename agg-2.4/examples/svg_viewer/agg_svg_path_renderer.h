@@ -174,9 +174,9 @@ namespace svg
 
 
 
-		template<class VertexSource> void concat_path(VertexSource& vs, unsigned path_id = 0)
+		template<class VertexSource> void add_path(VertexSource& vs, unsigned path_id = 0)
 		{
-			m_storage.concat_path(vs, path_id);
+			m_storage.add_path(vs, path_id);
 		}
 
 
