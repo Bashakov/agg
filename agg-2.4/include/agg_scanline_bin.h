@@ -139,12 +139,8 @@ namespace agg
         span*           m_cur_span;
     };
 
-
-
-
-
-
     //===========================================================scanline32_bin
+
     class scanline32_bin
     {
     public:
@@ -163,6 +159,10 @@ namespace agg
 
 
         //--------------------------------------------------------------------
+
+#pragma warning(push)
+#pragma	warning(disable : 4512)  // assignment operator could not be generated
+
         class const_iterator
         {
         public:
@@ -180,13 +180,13 @@ namespace agg
             const span_array_type& m_spans;
             unsigned               m_span_idx;
         };
-
+#pragma warning(pop)
 
         //--------------------------------------------------------------------
         scanline32_bin() : m_max_len(0), m_last_x(0x7FFFFFF0) {}
 
         //--------------------------------------------------------------------
-        void reset(int min_x, int max_x)
+        void reset(int /*min_x*/, int /*max_x*/)
         {
             m_last_x = 0x7FFFFFF0;
             m_spans.remove_all();

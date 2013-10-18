@@ -38,11 +38,13 @@ namespace agg
             coord_scale  = 1 << coord_shift
         };
 
-        T x,y;
+        T x, y;
         vertex_integer() {}
-        vertex_integer(T x_, T y_, unsigned flag) :
-            x(((x_ << 1) & ~1) | (flag &  1)),
-            y(((y_ << 1) & ~1) | (flag >> 1)) {}
+        vertex_integer(T x_, T y_, unsigned flag)
+		{
+			x = static_cast<T>(((x_ << 1) & ~1) | (flag &  1));
+			y = static_cast<T>(((y_ << 1) & ~1) | (flag >> 1));
+		}
 
         unsigned vertex(double* x_, double* y_, 
                         double dx=0, double dy=0,

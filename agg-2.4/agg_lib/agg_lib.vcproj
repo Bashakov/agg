@@ -172,7 +172,7 @@
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				WarningLevel="4"
 				DebugInformationFormat="4"
 			/>
 			<Tool
@@ -235,7 +235,7 @@
 				RuntimeLibrary="2"
 				EnableFunctionLevelLinking="true"
 				UsePrecompiledHeader="0"
-				WarningLevel="3"
+				WarningLevel="4"
 				DebugInformationFormat="3"
 			/>
 			<Tool
@@ -403,6 +403,22 @@
 				<File
 					RelativePath="..\examples\svg_viewer\expat\unkenc.c"
 					>
+					<FileConfiguration
+						Name="DebugU|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							WarningLevel="3"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseU|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							WarningLevel="3"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\examples\svg_viewer\expat\unkenc.h"
@@ -419,10 +435,42 @@
 				<File
 					RelativePath="..\examples\svg_viewer\expat\xmlparse.c"
 					>
+					<FileConfiguration
+						Name="DebugU|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							WarningLevel="3"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseU|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							WarningLevel="3"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\examples\svg_viewer\expat\xmlrole.c"
 					>
+					<FileConfiguration
+						Name="DebugU|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							WarningLevel="3"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseU|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							WarningLevel="3"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\examples\svg_viewer\expat\xmlrole.h"
@@ -431,6 +479,22 @@
 				<File
 					RelativePath="..\examples\svg_viewer\expat\xmltok.c"
 					>
+					<FileConfiguration
+						Name="DebugU|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							WarningLevel="3"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseU|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							WarningLevel="3"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\examples\svg_viewer\expat\xmltok.h"
@@ -439,6 +503,22 @@
 				<File
 					RelativePath="..\examples\svg_viewer\expat\xmltok_impl.c"
 					>
+					<FileConfiguration
+						Name="DebugU|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							WarningLevel="3"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseU|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							WarningLevel="3"
+						/>
+					</FileConfiguration>
 				</File>
 				<File
 					RelativePath="..\examples\svg_viewer\expat\xmltok_impl.h"
@@ -447,6 +527,22 @@
 				<File
 					RelativePath="..\examples\svg_viewer\expat\xmltok_ns.c"
 					>
+					<FileConfiguration
+						Name="DebugU|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							WarningLevel="3"
+						/>
+					</FileConfiguration>
+					<FileConfiguration
+						Name="ReleaseU|Win32"
+						>
+						<Tool
+							Name="VCCLCompilerTool"
+							WarningLevel="3"
+						/>
+					</FileConfiguration>
 				</File>
 			</Filter>
 		</Filter>

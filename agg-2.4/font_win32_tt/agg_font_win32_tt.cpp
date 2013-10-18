@@ -520,9 +520,8 @@ namespace agg
                m_glyph_rendering == glyph_ren_agg_gray8)
             {
                 byte_type gamma_table[rasterizer_scanline_aa<>::aa_scale];
-                unsigned i;
-                for(i = 0; i < rasterizer_scanline_aa<>::aa_scale; ++i)
-                    gamma_table[i] = m_rasterizer.apply_gamma(i);
+                for(unsigned i = 0; i < rasterizer_scanline_aa<>::aa_scale; ++i)
+                    gamma_table[i] = static_cast<byte_type>(m_rasterizer.apply_gamma(i));
 
                 gamma_hash = calc_crc32(gamma_table, sizeof(gamma_table));
             }

@@ -304,6 +304,10 @@ namespace agg
         typedef pod_bvector<span, 4> span_array_type;
 
         //--------------------------------------------------------------------
+
+#pragma warning(push)
+#pragma	warning(disable : 4512)  // assignment operator could not be generated
+
         class const_iterator
         {
         public:
@@ -311,6 +315,10 @@ namespace agg
                 m_spans(spans),
                 m_span_idx(0)
             {}
+			const_iterator(const const_iterator & rh)
+				: m_spans(rh.m_spans)
+				, m_span_idx(rh.m_span_idx) 
+			{}
 
             const span& operator*()  const { return m_spans[m_span_idx];  }
             const span* operator->() const { return &m_spans[m_span_idx]; }
@@ -340,7 +348,7 @@ namespace agg
             span_array_type& m_spans;
             unsigned         m_span_idx;
         };
-
+#pragma warning(pop)
 
 
         //--------------------------------------------------------------------

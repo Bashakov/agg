@@ -888,7 +888,7 @@ namespace agg
         AGG_INLINE self_type gradient(const self_type& c, double k) const
         {
             self_type ret;
-            calc_type ik = uround(k * base_mask);
+            value_type ik = static_cast<value_type>(uround(k * base_mask));
             ret.r = lerp(r, c.r, ik);
             ret.g = lerp(g, c.g, ik);
             ret.b = lerp(b, c.b, ik);
@@ -897,8 +897,9 @@ namespace agg
         }
 
         //--------------------------------------------------------------------
-        AGG_INLINE void add(const self_type& c, unsigned cover)
+        AGG_INLINE void add(const self_type& c, unsigned cover1)
         {
+			cover_type cover = static_cast<cover_type>(cover1);
             calc_type cr, cg, cb, ca;
             if (cover == cover_mask)
             {
@@ -1226,8 +1227,9 @@ namespace agg
         }
 
         //--------------------------------------------------------------------
-        AGG_INLINE void add(const self_type& c, unsigned cover)
+        AGG_INLINE void add(const self_type& c, unsigned cover1)
         {
+			cover_type cover = static_cast<cover_type>(cover1);
             if (cover == cover_mask)
             {
                 if (c.is_opaque()) 

@@ -194,8 +194,8 @@ namespace agg
             for (unsigned i = 1; i <= 255; ++i)
             {
                 // 16-bit RGB is in range [0,65535].
-                m_dir_table[i] = uround(65535.0 * sRGB_to_linear(i / 255.0));
-                m_inv_table[i] = uround(65535.0 * sRGB_to_linear((i - 0.5) / 255.0));
+                m_dir_table[i] = static_cast<int16u>(uround(65535.0 * sRGB_to_linear(i / 255.0)));
+                m_inv_table[i] = static_cast<int16u>(uround(65535.0 * sRGB_to_linear((i - 0.5) / 255.0)));
             }
         }
     };
@@ -212,8 +212,8 @@ namespace agg
             for (unsigned i = 1; i <= 255; ++i)
             {
                 // 8-bit RGB is handled with simple bidirectional lookup tables.
-                m_dir_table[i] = uround(255.0 * sRGB_to_linear(i / 255.0));
-                m_inv_table[i] = uround(255.0 * linear_to_sRGB(i / 255.0));
+                m_dir_table[i] = static_cast<int8u>(uround(255.0 * sRGB_to_linear(i / 255.0)));
+                m_inv_table[i] = static_cast<int8u>(uround(255.0 * linear_to_sRGB(i / 255.0)));
             }
         }
 
