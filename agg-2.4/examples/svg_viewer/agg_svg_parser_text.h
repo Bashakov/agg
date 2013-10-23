@@ -19,6 +19,8 @@ namespace svg
 
 	public:
 		ffont_to_path();
+		~ffont_to_path();
+		
 		bool set_font(const char_type* typeface, double height,	double width = 0.0, int weight = FW_REGULAR, bool italic = false);
 
 		template<class Path>
@@ -47,6 +49,8 @@ namespace svg
 
 	class parser_text
 	{
+		typedef str_type::char_type		char_type;
+
 		struct text_desc
 		{
 			double				x, y, height, width, weight;
@@ -56,8 +60,6 @@ namespace svg
 
 			void init(bool in_tag);
 		};
-
-		typedef str_type::char_type		char_type;
 
 	public:
 		parser_text(path_renderer & path);

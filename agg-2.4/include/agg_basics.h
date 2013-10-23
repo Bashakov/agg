@@ -16,6 +16,11 @@
 #ifndef AGG_BASICS_INCLUDED
 #define AGG_BASICS_INCLUDED
 
+#define _CRT_SECURE_NO_DEPRECATE
+#define _AFX_SECURE_NO_DEPRECATE
+#define _SECURE_SCL 0
+#define _SECURE_SCL_THROWS 0
+
 #include <math.h>
 #include <TCHAR.H>
 #include <string>

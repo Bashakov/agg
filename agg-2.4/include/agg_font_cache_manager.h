@@ -144,7 +144,8 @@ namespace agg
             m_max_fonts(max_fonts),
             m_num_fonts(0),
             m_cur_font(0)
-        {}
+        {
+		}
 
 
         //--------------------------------------------------------------------
@@ -265,7 +266,8 @@ namespace agg
             m_change_stamp(-1),
             m_prev_glyph(0),
             m_last_glyph(0)
-        {}
+        {
+		}
 
         //--------------------------------------------------------------------
         void reset_last_glyph()

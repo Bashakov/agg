@@ -13,6 +13,10 @@ namespace svg
 		m_feng.gamma(agg::gamma_none());
 	}
 		
+	ffont_to_path::~ffont_to_path()
+	{
+	}
+
 	bool ffont_to_path::set_font(const char_type* typeface, double height, double width, int weight, bool italic)
 	{
 		width = (width == height) ? 0.0 : width;
