@@ -51,11 +51,14 @@ namespace svg
         enum buf_size_e { buf_size = BUFSIZ };
 		typedef str_type::char_type			char_type;
 		typedef str_type::string_type		string_type;
+
     public:
         ~parser();
         parser(path_renderer& path);
+		void clear();
 
         void parse(const char_type* fname);
+		void parse(const char * stzSVG, size_t strLen);
         const char_type* title() const { return m_str_title.c_str(); }
 
     private:
@@ -92,13 +95,10 @@ namespace svg
         path_renderer& m_path;
         path_tokenizer m_tokenizer;
         string_type    m_str_title;
-        unsigned       m_title_len;
         bool           m_title_flag;
         bool           m_path_flag;
         string_type    m_str_attr_name;
         string_type    m_str_attr_value;
-        unsigned       m_attr_name_len;
-        unsigned       m_attr_value_len;
 		parser_text    m_parser_text;
 		utf_convertor  m_utf_convertor;
     };

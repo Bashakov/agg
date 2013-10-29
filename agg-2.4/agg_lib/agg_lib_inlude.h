@@ -15,4 +15,6 @@
 #include "../include/agg_conv_curve.h"
 #include "../include/agg_conv_contour.h"
 #include "../include/agg_gsv_text.h"
+#include "../include/platform/win32/agg_win32_bmp.h"
+#include "../examples/svg_viewer/agg_svg_parser.h"
 #include "../examples/svg_viewer/agg_svg_parser_text.h"

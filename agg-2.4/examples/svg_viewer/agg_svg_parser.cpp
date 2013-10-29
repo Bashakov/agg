@@ -226,19 +226,45 @@ namespace svg
     parser::parser(path_renderer& path)
 		: m_path(path)
         , m_tokenizer()
-        , m_title_len(0)
         , m_title_flag(false)
         , m_path_flag(false)
-        , m_attr_name_len(127)
-        , m_attr_value_len(1023)
 		, m_parser_text(m_path)
 		, m_str_title(_T(""))
     {
     }
 
+	//------------------------------------------------------------------------
+	void parser::clear()
+	{
+		m_str_title.clear();
+		m_str_attr_name.clear();
+		m_str_attr_value.clear();
+		m_parser_text.clear_attr();
+	}
+
+	//------------------------------------------------------------------------
+	void parser::parse(const char* szSVG, size_t strLen)
+	{
+		clear();
+		XML_Parser p = XML_ParserCreate(NULL);
+		if(p == 0) 
+			throw exception(_T("Couldn't allocate memory for parser"));
+
+		XML_SetUserData(p, this);
+		XML_SetElementHandler(p, start_element, end_element);
+		XML_SetCharacterDataHandler(p, content);
+		XML_SetUnknownEncodingHandler(p, unknownEncoding, NULL);
+
+		
+		if(!XML_Parse(p, szSVG, strLen, true))
+			throw exception(_T("%s at line %d\n"), XML_ErrorString(XML_GetErrorCode(p)), XML_GetCurrentLineNumber(p));
+		XML_ParserFree(p);
+	}
+
     //------------------------------------------------------------------------
     void parser::parse(const char_type* fname)
     {
+		clear();
 	    XML_Parser p = XML_ParserCreate(NULL);
 	    if(p == 0) 
 	    {
@@ -254,7 +280,6 @@ namespace svg
 		std::ifstream infile(fname, std::ios::binary);
         if(!infile)
 		    throw exception(_T("Couldn't open file %s"), fname);
-
 
         bool done = false;
         do
@@ -442,6 +467,39 @@ namespace svg
         return _tcscmp(((named_color*)p1)->name, ((named_color*)p2)->name);
     }
 
+	double parse_double(const str_type::char_type* str)
+	{
+		static const str_type::char_type * const nums = _T(".,+-01223456789");
+
+		str = _tcspbrk(str, nums);
+		if(!str)
+			return 0.0;
+		
+		double dH = 0.0, dL = 0.0;
+		for( ; *str && _tcschr(nums+2, *str); str++ )
+		{
+			dH *= 10;
+			dH += (*str) - _T('0');
+		}
+		if( *str == _T('.') || *str == _T(',') )
+			str++;
+
+		for( double d = 1.0; *str && _tcschr(nums+2, *str); str++ )
+		{
+			d *= 0.1;
+			dL += ((*str) - _T('0')) * d;
+		}
+		return dH + dL;
+	}
+
+//  dot or comma locale problem
+//  =====================================
+// 	double parse_double1(const str_type::char_type* str)
+// 	{
+// 	    while(*str == _T(' ')) ++str;
+// 		return _tstof(str); 
+// 	}
+
     //-------------------------------------------------------------
     rgba8 parse_color(const str_type::char_type* str)
     {
@@ -452,26 +510,26 @@ namespace svg
             _stscanf(str + 1, _T("%x"), &c);
             return rgb8_packed(c);
         }
-			else if(_tcsncmp(str, _T("rgb("), 4) == 0)
-			{
-				int r, g, b;
-				if(3 != _stscanf(str, _T("rgb(%d,%d,%d)"), &r, &g, &b))
-				{
-					throw exception(_T("parse_color: false on '%s'"), str);
-				}
-				return rgba8(r, g, b, 255);
-			}
-			else if(_tcsncmp(str, _T("rgba("), 5) == 0)
-			{
-				int r, g, b;
-				float a;
-				if(4 != _stscanf(str, _T("rgba(%d,%d,%d,%f)"), &r, &g, &b, &a))
-				{
-					throw exception(_T("parse_color: false on '%s'"), str);
-				}
-				a = (a < 1.0f)? ((a > 0.0f)? a: 0.0f): 1.0f;
-				return rgba8(r, g, b, (int8u)(255 * a));
-			}
+		else if(_tcsncmp(str, _T("rgb("), 4) == 0)
+		{
+			int r, g, b;
+			if(3 != _stscanf(str, _T("rgb(%d,%d,%d)"), &r, &g, &b))
+				throw exception(_T("parse_color: false on '%s'"), str);
+
+			return rgba8(r, g, b, 255);
+		}
+		else if(_tcsncmp(str, _T("rgba("), 5) == 0)
+		{
+			int r, g, b;
+			str_type::char_type bufOp[32];
+
+			if(4 != _stscanf(str, _T("rgba(%d,%d,%d, %s)"), &r, &g, &b, bufOp)) // failed with %f if locale settings changed
+				throw exception(_T("parse_color: false on '%s'"), str);
+
+			float a = parse_double(bufOp);
+			a = min( 1.0f, max(0.0f, a));
+			return rgba8(r, g, b, (int8u)(255 * a));
+		}
         else
         {
             named_color c;
@@ -482,18 +540,11 @@ namespace svg
 			_tcscpy(c.name, str);
             const void* p = bsearch(&c, colors, sizeof(colors) / sizeof(colors[0]), sizeof(colors[0]), cmp_color);
             if(p == 0)
-            {
                 throw exception(_T("parse_color: Invalid color name '%s'"), str);
-            }
+
             const named_color* pc = (const named_color*)p;
             return rgba8(pc->r, pc->g, pc->b, pc->a);
         }
-    }
-
-    double parse_double(const str_type::char_type* str)
-    {
-        while(*str == _T(' ')) ++str;
-		return _tstof(str);
     }
 
     //-------------------------------------------------------------

@@ -552,20 +552,19 @@ namespace agg
     //------------------------------------------------------------------------
     unsigned pixel_map::width() const
     {
-        return m_bmp->bmiHeader.biWidth;
+		return m_bmp? m_bmp->bmiHeader.biWidth: 0;
     }
 
     //------------------------------------------------------------------------
     unsigned pixel_map::height() const
     {
-        return m_bmp->bmiHeader.biHeight;
+		return m_bmp? m_bmp->bmiHeader.biHeight: 0;
     }
 
     //------------------------------------------------------------------------
     int pixel_map::stride() const
     {
-        return calc_row_len(m_bmp->bmiHeader.biWidth, 
-                            m_bmp->bmiHeader.biBitCount);
+		return !m_bmp? 0: calc_row_len(m_bmp->bmiHeader.biWidth, m_bmp->bmiHeader.biBitCount);
     }
 
 
