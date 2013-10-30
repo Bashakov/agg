@@ -41,4 +41,10 @@
 // This #define is used only for default rendering_buffer type,
 // in short hand typedefs like pixfmt_rgba32.
 
+#define _CRT_SECURE_NO_DEPRECATE
+#define _AFX_SECURE_NO_DEPRECATE
+
+#define _SECURE_SCL 0
+#define _SECURE_SCL_THROWS 0
+
 #endif

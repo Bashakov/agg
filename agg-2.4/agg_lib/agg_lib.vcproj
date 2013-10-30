@@ -289,6 +289,14 @@
 				>
 			</File>
 			<File
+				RelativePath="..\src\agg_vcgen_dash.cpp"
+				>
+			</File>
+			<File
+				RelativePath="..\include\agg_vcgen_dash.h"
+				>
+			</File>
+			<File
 				RelativePath="..\src\agg_vcgen_stroke.cpp"
 				>
 			</File>

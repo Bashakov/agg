@@ -17,11 +17,14 @@
 //
 //----------------------------------------------------------------------------
 
+#include "agg_config.h"
 #include <stdio.h>
 #include <string.h>
 #include <ctype.h>
 #include <fstream>
+
 #include "agg_svg_parser.h"
+#include "agg_rounded_rect.h"
 #include "expat.h"
 #include "unkenc.h"
 
@@ -526,7 +529,7 @@ namespace svg
 			if(4 != _stscanf(str, _T("rgba(%d,%d,%d, %s)"), &r, &g, &b, bufOp)) // failed with %f if locale settings changed
 				throw exception(_T("parse_color: false on '%s'"), str);
 
-			float a = parse_double(bufOp);
+			float a = static_cast<float>(parse_double(bufOp));
 			a = min( 1.0f, max(0.0f, a));
 			return rgba8(r, g, b, (int8u)(255 * a));
 		}
@@ -607,6 +610,11 @@ namespace svg
         {
             m_path.miter_limit(parse_double(value));
         }
+		else
+		if(_tcscmp(name, _T("stroke-dasharray")) == 0)
+		{
+			parse_stroke_dasharray(value);
+		}
         else
         if(_tcscmp(name, _T("stroke-opacity")) == 0)
         {
@@ -681,6 +689,8 @@ namespace svg
         double y = 0.0;
         double w = 0.0;
         double h = 0.0;
+		double rx = 0.0;
+		double ry = 0.0;
 
         m_path.begin_path();
         for(i = 0; attr[i]; i += 2)
@@ -691,22 +701,31 @@ namespace svg
                 if(_tcscmp(attr[i], _T("y")) == 0)      y = parse_double(attr[i + 1]);
                 if(_tcscmp(attr[i], _T("width")) == 0)  w = parse_double(attr[i + 1]);
                 if(_tcscmp(attr[i], _T("height")) == 0) h = parse_double(attr[i + 1]);
-                // rx - to be implemented 
-                // ry - to be implemented
+				if(_tcscmp(attr[i], _T("rx")) == 0)    rx = parse_double(attr[i + 1]);
+				if(_tcscmp(attr[i], _T("ry")) == 0)    ry = parse_double(attr[i + 1]);
             }
         }
-
 
         if(w != 0.0 && h != 0.0)
         {
             if(w < 0.0) throw exception(_T("parse_rect: Invalid width: %f"), w);
             if(h < 0.0) throw exception(_T("parse_rect: Invalid height: %f"), h);
 
-            m_path.move_to(x,     y);
-            m_path.line_to(x + w, y);
-            m_path.line_to(x + w, y + h);
-            m_path.line_to(x,     y + h);
-            m_path.close_subpath();
+			if(rx == 0.0 && ry == 0.0)
+			{
+				m_path.move_to(x,     y);
+				m_path.line_to(x + w, y);
+				m_path.line_to(x + w, y + h);
+				m_path.line_to(x,     y + h);
+				m_path.close_subpath();
+			}
+			else
+			{
+				rounded_rect rr(x, y, x+w, y+h, 0);
+				rr.radius(rx, ry);
+				rr.normalize_radius();
+				m_path.add_path(rr);
+			}
         }
         m_path.end_path();
     }
@@ -886,6 +905,22 @@ namespace svg
         }
     }
 
+	//-------------------------------------------------------------
+	void parser::parse_stroke_dasharray(const char_type* str)
+	{
+		m_tokenizer.set_path_str(str);
+		dash_description dashes;
+ 		while (m_tokenizer.next())
+ 		{
+ 			double dash = m_tokenizer.last_number();
+			if(!m_tokenizer.next())
+				throw exception( _T("parse_stroke_dasharray: dash gap len must be pairs"));
+			double gap = m_tokenizer.last_number(); 
+			dashes.add_dash(dash, gap);
+ 		}
+		if(dashes.dashes_count())
+			m_path.dash(dashes);
+	}
 
     //-------------------------------------------------------------
     static bool is_numeric(str_type::char_type c)

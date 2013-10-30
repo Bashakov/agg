@@ -24,73 +24,89 @@
 namespace agg
 {
 
+	dash_description::dash_description()
+		: m_total_dash_len(0.0)
+		, m_num_dashes(0)
+		, m_dash_start(0.0)
+		, m_curr_dash_start(0.0)
+		, m_curr_dash(0)
+	{
+	}
+
+	//------------------------------------------------------------------------
+	const dash_description & dash_description::operator = (const dash_description & rh)
+	{
+		if(this != &rh)
+		{
+			memcpy(m_dashes, rh.m_dashes, rh.m_num_dashes * sizeof(m_dashes[0]));
+			m_num_dashes = rh.m_num_dashes;
+			m_total_dash_len = rh.m_total_dash_len;
+			m_curr_dash_start = rh.m_curr_dash_start;
+			m_curr_dash = rh.m_curr_dash;
+		}
+		return *this;
+	}
+
+	//------------------------------------------------------------------------
+	void dash_description::remove_all_dashes()
+	{
+		m_total_dash_len = 0.0;
+		m_num_dashes = 0;
+		m_curr_dash_start = 0.0;
+		m_curr_dash = 0;
+	}
+
+	//------------------------------------------------------------------------
+	void dash_description::add_dash(double dash_len, double gap_len)
+	{
+		if(m_num_dashes < max_dashes)
+		{
+			m_total_dash_len += dash_len + gap_len;
+			m_dashes[m_num_dashes++] = dash_len;
+			m_dashes[m_num_dashes++] = gap_len;
+		}
+	}
+
+	//------------------------------------------------------------------------
+	void dash_description::dash_start(double ds)
+	{
+		m_dash_start = ds;
+		calc_dash_start(fabs(ds));
+	}
+
+
+	//------------------------------------------------------------------------
+	void dash_description::calc_dash_start(double ds)
+	{
+		m_curr_dash = 0;
+		m_curr_dash_start = 0.0;
+		while(ds > 0.0)
+		{
+			if(ds > m_dashes[m_curr_dash])
+			{
+				ds -= m_dashes[m_curr_dash];
+				++m_curr_dash;
+				m_curr_dash_start = 0.0;
+				if(m_curr_dash >= m_num_dashes) m_curr_dash = 0;
+			}
+			else
+			{
+				m_curr_dash_start = ds;
+				ds = 0.0;
+			}
+		}
+	}
+
+
+	//------------------------------------------------------------------------
     //------------------------------------------------------------------------
     vcgen_dash::vcgen_dash() :
-        m_total_dash_len(0.0),
-        m_num_dashes(0),
-        m_dash_start(0.0),
         m_shorten(0.0),
-        m_curr_dash_start(0.0),
-        m_curr_dash(0),
         m_src_vertices(),
         m_closed(0),
         m_status(initial),
         m_src_vertex(0)
     {
-    }
-
-
-
-    //------------------------------------------------------------------------
-    void vcgen_dash::remove_all_dashes()
-    {
-        m_total_dash_len = 0.0;
-        m_num_dashes = 0;
-        m_curr_dash_start = 0.0;
-        m_curr_dash = 0;
-    }
-
-
-    //------------------------------------------------------------------------
-    void vcgen_dash::add_dash(double dash_len, double gap_len)
-    {
-        if(m_num_dashes < max_dashes)
-        {
-            m_total_dash_len += dash_len + gap_len;
-            m_dashes[m_num_dashes++] = dash_len;
-            m_dashes[m_num_dashes++] = gap_len;
-        }
-    }
-
-
-    //------------------------------------------------------------------------
-    void vcgen_dash::dash_start(double ds)
-    {
-        m_dash_start = ds;
-        calc_dash_start(fabs(ds));
-    }
-
-
-    //------------------------------------------------------------------------
-    void vcgen_dash::calc_dash_start(double ds)
-    {
-        m_curr_dash = 0;
-        m_curr_dash_start = 0.0;
-        while(ds > 0.0)
-        {
-            if(ds > m_dashes[m_curr_dash])
-            {
-                ds -= m_dashes[m_curr_dash];
-                ++m_curr_dash;
-                m_curr_dash_start = 0.0;
-                if(m_curr_dash >= m_num_dashes) m_curr_dash = 0;
-            }
-            else
-            {
-                m_curr_dash_start = ds;
-                ds = 0.0;
-            }
-        }
     }
 
 
@@ -101,7 +117,6 @@ namespace agg
         m_src_vertices.remove_all();
         m_closed = 0;
     }
-
 
     //------------------------------------------------------------------------
     void vcgen_dash::add_vertex(double x, double y, unsigned cmd)

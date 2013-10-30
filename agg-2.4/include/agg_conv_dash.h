@@ -56,6 +56,8 @@ namespace agg
         void shorten(double s) { base_type::generator().shorten(s); }
         double shorten() const { return base_type::generator().shorten(); }
 
+		vcgen_dash & generator() { return base_type::generator(); }
+
     private:
         conv_dash(const conv_dash<VertexSource, Markers>&);
         const conv_dash<VertexSource, Markers>& 

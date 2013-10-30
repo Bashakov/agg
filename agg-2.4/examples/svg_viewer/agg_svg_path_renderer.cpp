@@ -34,7 +34,11 @@ namespace svg
         m_curved_stroked_trans(m_curved_stroked, m_transform),
 
         m_curved_trans(m_curved_count, m_transform),
-        m_curved_trans_contour(m_curved_trans)
+        m_curved_trans_contour(m_curved_trans),
+
+		m_curved_dash(m_curved_count),
+		m_curved_dash_stroked(m_curved_dash),
+		m_curved_dash_stroked_trans(m_curved_dash_stroked, m_transform)
     {
         m_curved_trans_contour.auto_detect_orientation(false);
     }
@@ -47,6 +51,7 @@ namespace svg
         m_attr_storage.remove_all();
         m_attr_stack.remove_all();
         m_transform.reset();
+		m_dashes.remove_all();
     }
 
     //------------------------------------------------------------------------
@@ -289,6 +294,14 @@ namespace svg
     {
         return cur_attr().transform;
     }
+
+	//------------------------------------------------------------------------
+	void path_renderer::dash(const dash_description & desc)
+	{
+		m_dashes.add(desc);
+		int idx = m_dashes.size();
+		cur_attr().dash_index = idx - 1;
+	}
 
     //------------------------------------------------------------------------
     void path_renderer::parse_path(path_tokenizer& tok)

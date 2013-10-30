@@ -657,7 +657,6 @@ namespace agg
         ++m_size;
     }
 
-
     //------------------------------------------------------------------------
     template<class T, unsigned S> 
     inline void pod_bvector<T, S>::remove_last()

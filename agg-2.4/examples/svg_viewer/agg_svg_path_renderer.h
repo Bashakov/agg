@@ -29,6 +29,8 @@
 #include "agg_bounding_rect.h"
 #include "agg_rasterizer_scanline_aa.h"
 #include "agg_svg_path_tokenizer.h"
+#include "agg_vcgen_dash.h"
+#include "agg_conv_dash.h"
 
 namespace agg
 {
@@ -74,6 +76,7 @@ namespace svg
         double       miter_limit;
         double       stroke_width;
         trans_affine transform;
+		int          dash_index;
 
         // Empty constructor
         path_attributes() :
@@ -87,6 +90,7 @@ namespace svg
             line_cap(butt_cap),
             miter_limit(4.0),
             stroke_width(1.0),
+			dash_index(-1),
             transform()
         {
         }
@@ -103,6 +107,7 @@ namespace svg
             line_cap(attr.line_cap),
             miter_limit(attr.miter_limit),
             stroke_width(attr.stroke_width),
+			dash_index(attr.dash_index),
             transform(attr.transform)
         {
         }
@@ -119,6 +124,7 @@ namespace svg
             line_cap(attr.line_cap),
             miter_limit(attr.miter_limit),
             stroke_width(attr.stroke_width),
+			dash_index(attr.dash_index),
             transform(attr.transform)
         {
         }
@@ -131,6 +137,7 @@ namespace svg
     {
     public:
         typedef pod_bvector<path_attributes>   attr_storage;
+		typedef pod_bvector<dash_description>  dash_storage;
 
         typedef conv_curve<path_storage>       curved;
         typedef conv_count<curved>             curved_count;
@@ -138,8 +145,12 @@ namespace svg
         typedef conv_stroke<curved_count>      curved_stroked;
         typedef conv_transform<curved_stroked> curved_stroked_trans;
 
-        typedef conv_transform<curved_count>   curved_trans;
+		typedef conv_transform<curved_count>   curved_trans;
         typedef conv_contour<curved_trans>     curved_trans_contour;
+
+		typedef conv_dash<curved_count>        curved_dash;
+		typedef conv_stroke<curved_dash>       curved_dash_stroked;
+		typedef conv_transform<curved_dash_stroked> curved_dash_stroked_trans;
 
         path_renderer();
 
@@ -172,13 +183,10 @@ namespace svg
 					bool rel=false);
         void close_subpath();                               // Z, z
 
-
-
 		template<class VertexSource> void add_path(VertexSource& vs, unsigned path_id = 0)
 		{
 			m_storage.add_path(vs, path_id);
 		}
-
 
         unsigned vertex_count() const { return m_curved_count.count(); }
         
@@ -200,6 +208,7 @@ namespace svg
         void line_cap(line_cap_e cap);
         void miter_limit(double ml);
         trans_affine& transform();
+		void dash(const dash_description & desc);
 
         // Make all polygons CCW-oriented
         void arrange_orientations()
@@ -275,13 +284,28 @@ namespace svg
 
                 if(attr.stroke_flag)
                 {
-                    m_curved_stroked.width(attr.stroke_width);
-                    //m_curved_stroked.line_join((attr.line_join == miter_join) ? miter_join_round : attr.line_join);
-                    m_curved_stroked.line_join(attr.line_join);
-                    m_curved_stroked.line_cap(attr.line_cap);
-                    m_curved_stroked.miter_limit(attr.miter_limit);
-                    m_curved_stroked.inner_join(inner_round);
-                    m_curved_stroked.approximation_scale(scl);
+					bool bDashed = attr.dash_index >= 0 && attr.dash_index <= (int)m_dashes.size();
+					if(!bDashed)
+					{
+						m_curved_stroked.width(attr.stroke_width);
+						//m_curved_stroked.line_join((attr.line_join == miter_join) ? miter_join_round : attr.line_join);
+						m_curved_stroked.line_join(attr.line_join);
+						m_curved_stroked.line_cap(attr.line_cap);
+						m_curved_stroked.miter_limit(attr.miter_limit);
+						m_curved_stroked.inner_join(inner_round);
+						m_curved_stroked.approximation_scale(scl);
+					}
+					else
+					{
+						const dash_description & src = m_dashes[attr.dash_index];
+						(dash_description&)(m_curved_dash.generator()) = src;
+						m_curved_dash_stroked.width(attr.stroke_width);
+						m_curved_dash_stroked.line_join(attr.line_join);
+						m_curved_dash_stroked.line_cap(attr.line_cap);
+						m_curved_dash_stroked.miter_limit(attr.miter_limit);
+						m_curved_dash_stroked.inner_join(inner_round);
+						m_curved_dash_stroked.approximation_scale(scl);
+					}
 
                     // If the *visual* line width is considerable we 
                     // turn on processing of curve cusps.
@@ -292,7 +316,11 @@ namespace svg
                     }
                     ras.reset();
                     ras.filling_rule(fill_non_zero);
-                    ras.add_path(m_curved_stroked_trans, attr.index);
+					if(!bDashed)
+						ras.add_path(m_curved_stroked_trans, attr.index);
+					else
+						ras.add_path(m_curved_dash_stroked_trans, attr.index);
+
                     color = attr.stroke_color;
                     color.opacity(color.opacity() * opacity);
                     ren.color(color);
@@ -308,6 +336,7 @@ namespace svg
         attr_storage   m_attr_storage;
         attr_storage   m_attr_stack;
         trans_affine   m_transform;
+		dash_storage   m_dashes;
 
         curved                       m_curved;
         curved_count                 m_curved_count;
@@ -317,6 +346,10 @@ namespace svg
 
         curved_trans                 m_curved_trans;
         curved_trans_contour         m_curved_trans_contour;
+
+		curved_dash                  m_curved_dash;
+		curved_dash_stroked          m_curved_dash_stroked;
+		curved_dash_stroked_trans    m_curved_dash_stroked_trans;
     };
 
 }

@@ -19,6 +19,7 @@
 
 #include <windows.h>
 #include <string.h>
+#include "agg_config.h"
 #include "platform/agg_platform_support.h"
 #include "platform/win32/agg_win32_bmp.h"
 #include "util/agg_color_conv.h"

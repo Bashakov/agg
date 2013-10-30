@@ -76,6 +76,7 @@ namespace svg
         void parse_line(const char_type** attr);
         void parse_style(const char_type* str);
         void parse_transform(const char_type* str);
+		void parse_stroke_dasharray(const char_type* str);
 		
 		void parse_text_start(const char_type** attr);
 		void parse_text_content(const char_type* s, int len);
