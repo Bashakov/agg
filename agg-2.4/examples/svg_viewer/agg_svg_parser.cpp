@@ -747,6 +747,7 @@ namespace svg
         double y2 = 0.0;
 
         m_path.begin_path();
+		m_path.fill_none();
         for(i = 0; attr[i]; i += 2)
         {
             if(!parse_attr(attr[i], attr[i + 1]))

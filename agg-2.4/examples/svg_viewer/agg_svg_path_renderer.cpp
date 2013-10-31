@@ -25,6 +25,15 @@ namespace agg
 namespace svg
 {
 
+/*
+conv_transform Ч афинные преобразовани€
+conv_contour Ч позвол€ет extend/shrink полигон
+conv_curve Ч сглаживает полигон
+conv_stroke Ч делает stroke(каЄмку)
+conv_dash Ч рисует штрих линию
+conv_marker Ч добавл€ет маркеры
+*/
+
     //------------------------------------------------------------------------
     path_renderer::path_renderer() :
         m_curved(m_storage),
