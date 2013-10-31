@@ -282,7 +282,7 @@ namespace svg
                     agg::render_scanlines(ras, sl, ren);
                 }
 
-                if(attr.stroke_flag)
+                if( attr.stroke_flag)
                 {
 					bool bDashed = attr.dash_index >= 0 && attr.dash_index <= (int)m_dashes.size();
 					if(!bDashed)

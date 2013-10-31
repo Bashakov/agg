@@ -477,9 +477,14 @@ namespace svg
 		str = _tcspbrk(str, nums);
 		if(!str)
 			return 0.0;
+
 		
+		bool bNegativ = (*str == _T('-'))? true: false;
+		if( *str == _T('+') || *str == _T('-') )
+			str++;
+
 		double dH = 0.0, dL = 0.0;
-		for( ; *str && _tcschr(nums+2, *str); str++ )
+		for( ; *str && _tcschr(nums+4, *str); str++ )
 		{
 			dH *= 10;
 			dH += (*str) - _T('0');
@@ -487,12 +492,13 @@ namespace svg
 		if( *str == _T('.') || *str == _T(',') )
 			str++;
 
-		for( double d = 1.0; *str && _tcschr(nums+2, *str); str++ )
+		for( double d = 1.0; *str && _tcschr(nums+4, *str); str++ )
 		{
 			d *= 0.1;
 			dL += ((*str) - _T('0')) * d;
 		}
-		return dH + dL;
+		dH += dL;
+		return bNegativ? -dH: dH;
 	}
 
 //  dot or comma locale problem
@@ -708,8 +714,8 @@ namespace svg
 
         if(w != 0.0 && h != 0.0)
         {
-            if(w < 0.0) throw exception(_T("parse_rect: Invalid width: %f"), w);
-            if(h < 0.0) throw exception(_T("parse_rect: Invalid height: %f"), h);
+			if(w < 0.0) { x += w; w = -w; }
+			if(h < 0.0) { y += h; h = -h; }
 
 			if(rx == 0.0 && ry == 0.0)
 			{
