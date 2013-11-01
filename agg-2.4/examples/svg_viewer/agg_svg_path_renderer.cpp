@@ -213,9 +213,7 @@ conv_marker Ч добавл€ет маркеры
     //------------------------------------------------------------------------
     void path_renderer::push_attr()
     {
-        m_attr_stack.add(m_attr_stack.size() ? 
-                         m_attr_stack[m_attr_stack.size() - 1] :
-                         path_attributes());
+        m_attr_stack.add(m_attr_stack.size()? m_attr_stack[m_attr_stack.size() - 1]: path_attributes());
     }
 
     //------------------------------------------------------------------------

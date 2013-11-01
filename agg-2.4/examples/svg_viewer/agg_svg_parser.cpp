@@ -712,7 +712,11 @@ namespace svg
             }
         }
 
-        if(w != 0.0 && h != 0.0)
+        if(w == 0.0 || h == 0.0)
+		{
+			m_path.move_to(x,     y);
+		}
+		else
         {
 			if(w < 0.0) { x += w; w = -w; }
 			if(h < 0.0) { y += h; h = -h; }
@@ -733,7 +737,7 @@ namespace svg
 				m_path.add_path(rr);
 			}
         }
-        m_path.end_path();
+		m_path.end_path();
     }
 
 
@@ -747,7 +751,7 @@ namespace svg
         double y2 = 0.0;
 
         m_path.begin_path();
-		m_path.fill_none();
+		//m_path.fill_none();
         for(i = 0; attr[i]; i += 2)
         {
             if(!parse_attr(attr[i], attr[i + 1]))
