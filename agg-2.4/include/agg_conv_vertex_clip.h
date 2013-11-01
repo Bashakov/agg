@@ -14,7 +14,16 @@ namespace agg
 	template<class coord_type> class vertex_sl_clip
 	{
 		typedef rect_base<coord_type>     rect_type;
+		struct piece
+		{
+			double end;
+			bool   vsbl;
 
+			piece(double e = 0.0, bool v_ = 0): end(e), vsbl(v_) {}
+			static bool sort_fn ( const piece & lh, const piece & rh )	{ return lh.end < rh.end; }
+		};
+
+	public:
 		struct point
 		{
 			coord_type x, y;
@@ -26,29 +35,20 @@ namespace agg
 			unsigned clippin_flag(const rect_type & cb) const { return clipping_flags(x, y, cb); }
 		};
 
-		struct piece
-		{
-			double end;
-			bool   vsbl;
-
-			piece(double e = 0.0, bool v_ = 0): end(e), vsbl(v_) {}
-			static bool sort_fn ( const piece & lh, const piece & rh )	{ return lh.end < rh.end; }
-		};
-
 	public:
 		//--------------------------------------------------------------------
 		vertex_sl_clip()  
-			: m_clip_box(0,0,0,0)
+			: m_clip_box(0, 0, 0, 0)
 			, m_clipping(false) 
 		{
-			rewind();
+			reset_pieses();
 		}
 
 		//--------------------------------------------------------------------
 		void reset_clipping()
 		{
 			m_clipping = false;
-			rewind();
+			reset_pieses();
 		}
 
 		//--------------------------------------------------------------------
@@ -57,38 +57,37 @@ namespace agg
 			m_clip_box = cb;
 			m_clip_box.normalize();
 			m_clipping = true;
-			rewind();
+			reset_pieses();
 		}
 
 		//--------------------------------------------------------------------
 		void set_transform(const trans_affine & transform)
 		{
 			m_transform = transform;
-			rewind();
+			reset_pieses();
 		}
 
 		//--------------------------------------------------------------------
-		void move_to(const coord_type x1, const coord_type y1)
-		{
-			m_pt2 = point(x1, y1);
-			rewind();
-		}
-
-		//--------------------------------------------------------------------
-		void rewind()
+		void reset_pieses()
 		{
 			m_count_piece = 0;
 			m_crrnt_piece = 0;
 		}
 
-		bool line_to(const coord_type x2, const coord_type y2)
+		//--------------------------------------------------------------------
+		point get_pt2() const 
 		{
-			rewind();
-			m_pt1 = m_pt2;
-			m_pt2 = point(x2, y2);
+			return m_pt2; 
+		}
+
+		//--------------------------------------------------------------------
+		bool line_to(const point p1, const point p2)
+		{
+			reset_pieses();
+			m_pt1 = p1;
+			m_pt2 = p2;
 			if(m_clipping)
 			{
-
 				const point p1 = m_pt1.transform(m_transform);
 				const point p2 = m_pt2.transform(m_transform);
 
@@ -120,24 +119,30 @@ namespace agg
 			return m_count_piece == 0;
 		}
 
-		bool get_cmd(coord_type * x, coord_type * y, unsigned * cmd)
+		//--------------------------------------------------------------------
+		bool get_cmd(coord_type * x, coord_type * y, bool * vsbl)
 		{
 			if(m_crrnt_piece >= m_count_piece)
 				return false;
-
 			do
 			{
 				point p(m_pieces[m_crrnt_piece].end, m_pt1, m_pt2);
-				bool vsbl = m_pieces[m_crrnt_piece].vsbl;
-
+				*vsbl = m_pieces[m_crrnt_piece].vsbl;
 				*x = p.x;
 				*y = p.y;
-				*cmd = vsbl? path_cmd_line_to: path_cmd_move_to;
 
 				++m_crrnt_piece;
-			}	while(  m_crrnt_piece < m_count_piece && (*cmd == path_cmd_move_to) && !m_pieces[m_crrnt_piece].vsbl );
+			}	while(  m_crrnt_piece < m_count_piece && !(*vsbl) && !m_pieces[m_crrnt_piece].vsbl );
 			return true;
 		}
+		
+		//--------------------------------------------------------------------
+		void return_cmd()
+		{
+			if(m_crrnt_piece > 0)
+				m_crrnt_piece--;
+		}
+
 
 	private:
 		static double resolve(coord_type a1, coord_type a2, coord_type ax)
@@ -164,9 +169,10 @@ namespace agg
 	class conv_vertex_clip
 	{
 		typedef agg::vertex_sl_clip<coord_type>	Cliper;
+		typedef typename Cliper::point			point;
 
 	public:
-		conv_vertex_clip(VertexSource& vs) : m_source(vs), m_bClip(false) {}
+		conv_vertex_clip(VertexSource& vs) : m_source(vs), m_bClip(false), m_bNeedCloseLine(false), m_bPrevVisible(false), m_bFirstPiece(false) {}
 
 		void set_transform(const trans_affine & transform)
 		{
@@ -190,39 +196,131 @@ namespace agg
 
 		void rewind(unsigned path_id) 
 		{ 
+			//printf("\n =============== rewind ================= \n");
 			m_source.rewind(path_id); 
 		}
 
-		unsigned vertex(double* x, double* y) 
-		{ 
-			unsigned cmd = path_cmd_stop;
-			if( m_bClip && m_cliper.get_cmd(x, y, &cmd) )
-				return cmd;
+		unsigned vertex(coord_type* x, coord_type* y)
+		{
+			unsigned cmd = m_bClip? work_fn(x, y): m_source.vertex(x, y);
 
-			cmd = m_source.vertex(x, y); 
-			if( m_bClip )
-			{
-				if(is_move_to(cmd)) 
-				{
-					m_cliper.move_to(*x, *y);
-				}
-				else if(is_line_to(cmd))
-				{
-					if( !m_cliper.line_to(*x, *y))
-						m_cliper.get_cmd(x, y, &cmd);
-				}
-				else 
-				{
-					_ASSERT(is_stop(cmd)); //only line_to and move_to supported, use conv_curve for transform those to these
-				}
-			}
+			//printf("OUT: %2d | %8.2lf %8.2lf\n", cmd, *x, *y);
 			return cmd;
 		}
 
 	private:
+		unsigned work_fn(coord_type* x, coord_type* y) 
+		{ 
+			while(1)
+			{
+				unsigned cmd = path_cmd_stop;
+				if( storage(x, y, &cmd) )
+					return cmd;
+
+				cmd = m_source.vertex(x, y); 
+				//printf("\nIN : %2d | %8.2lf %8.2lf\n", cmd, *x, *y);
+				if(is_move_to(cmd)) 
+				{
+					move_to(x, y);
+					return cmd;
+				}
+				else if(is_line_to(cmd))
+				{
+					if(line_to(x, y))
+						return path_cmd_line_to;
+				}
+				else if( is_end_poly(cmd) )
+				{
+					if(close_poly(x, y))
+						return path_cmd_line_to;
+				}
+				else
+				{
+					_ASSERT(is_stop(cmd)); //only line_to and move_to supported, use conv_curve for transform those to these
+					return cmd;
+				}
+			}
+		}
+			
+	private:
+		bool storage(coord_type* x, coord_type* y, unsigned * cmd)
+		{
+			bool vsbl = false;
+			while( m_cliper.get_cmd(x, y, &vsbl) )
+			{
+				bool prev_vis = m_bPrevVisible;
+				m_bPrevVisible = vsbl;
+				if(vsbl)
+				{
+					if( m_bFirstPiece )
+					{
+						m_bFirstPiece = false;
+						*x = m_ptFirstPieceCorrection.x;
+						*y = m_ptFirstPieceCorrection.y;
+						m_cliper.return_cmd();
+						*cmd = path_cmd_move_to;
+						return true;
+					}
+					if( m_bNeedCloseLine )
+					{
+						m_bNeedCloseLine = false;
+						*x = m_ptInvisibleLine.x;
+						*y = m_ptInvisibleLine.y;
+						m_cliper.return_cmd();
+					}
+
+					*cmd = path_cmd_line_to;
+					m_bFirstPiece = false;
+					return true;
+				}
+				else if(prev_vis || m_bNeedCloseLine)
+				{
+					m_bNeedCloseLine = true;
+					m_ptInvisibleLine = point(*x, *y);
+				}
+				else if(!vsbl && m_bFirstPiece)
+				{
+					m_ptFirstPieceCorrection = point(*x, *y);
+				}
+			}
+			return false;
+		}
+		void move_to(coord_type* x, coord_type* y)
+		{
+			m_ptFirstPieceCorrection = m_ptStartPoligon = m_ptCurrentTo = point(*x, *y);
+			m_cliper.reset_pieses();
+			m_bNeedCloseLine = false;
+			m_bPrevVisible = false;
+			m_bFirstPiece = true;
+		}
+		bool line_to(coord_type* x, coord_type* y)
+		{
+			point prev = m_ptCurrentTo;
+			m_ptCurrentTo = point(*x, *y);
+			bool normal = m_cliper.line_to( prev, m_ptCurrentTo);
+			if(normal)
+				m_bFirstPiece = false;
+			return normal; 
+		}
+		bool close_poly(coord_type* x, coord_type* y)
+		{
+			*x = m_ptStartPoligon.x;
+			*y = m_ptStartPoligon.y;
+			return line_to(x, y);
+		}
+
+	private:
 		VertexSource	&	m_source;
-		Cliper				m_cliper;
-		bool				m_bClip;
+		Cliper		m_cliper;
+		bool		m_bClip;
+		point		m_ptCurrentTo;
+		point		m_ptInvisibleLine;
+		point		m_ptStartPoligon;
+		point		m_ptFirstPieceCorrection;
+
+		bool		m_bNeedCloseLine;
+		bool		m_bPrevVisible;
+		bool		m_bFirstPiece;
 	};
 	
 
