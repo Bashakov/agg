@@ -31,6 +31,7 @@
 #include "agg_svg_path_tokenizer.h"
 #include "agg_vcgen_dash.h"
 #include "agg_conv_dash.h"
+#include "agg_conv_vertex_clip.h"
 
 namespace agg
 {
@@ -41,26 +42,24 @@ namespace svg
     template<class VertexSource> class conv_count
     {
     public:
-        conv_count(VertexSource& vs) : m_source(&vs), m_count(0) {}
+        conv_count(VertexSource& vs) : m_source(vs), m_count(0) {}
 
         void count(unsigned n) { m_count = n; }
         unsigned count() const { return m_count; }
 
-        void rewind(unsigned path_id) { m_source->rewind(path_id); }
+        void rewind(unsigned path_id) { m_source.rewind(path_id); }
         unsigned vertex(double* x, double* y) 
         { 
             ++m_count; 
-            return m_source->vertex(x, y); 
+            return m_source.vertex(x, y); 
         }
 
     private:
-        VertexSource* m_source;
-        unsigned m_count;
+        VertexSource &	m_source;
+        unsigned		m_count;
     };
 
-
-
-
+	
     //============================================================================
     // Basic path attributes
     struct path_attributes
@@ -141,14 +140,15 @@ namespace svg
 
         typedef conv_curve<path_storage>       curved;
         typedef conv_count<curved>             curved_count;
+		typedef conv_vertex_clip<curved_count> curved_cliped;
 
-        typedef conv_stroke<curved_count>      curved_stroked;
+        typedef conv_stroke<curved_cliped>     curved_stroked;
         typedef conv_transform<curved_stroked> curved_stroked_trans;
 
-		typedef conv_transform<curved_count>   curved_trans;
+		typedef conv_transform<curved_cliped>  curved_trans;
         typedef conv_contour<curved_trans>     curved_trans_contour;
 
-		typedef conv_dash<curved_count>        curved_dash;
+		typedef conv_dash<curved_cliped>       curved_dash;
 		typedef conv_stroke<curved_dash>       curved_dash_stroked;
 		typedef conv_transform<curved_dash_stroked> curved_dash_stroked_trans;
 
@@ -248,6 +248,8 @@ namespace svg
             unsigned i;
 
             ras.clip_box(cb.x1, cb.y1, cb.x2, cb.y2);
+			m_curved_clip.clip_box(cb, 2.0, 2.0);
+			//m_curved_clip.clip_box(cb, 0.8, 0.8);
             m_curved_count.count(0);
 
             for(i = 0; i < m_attr_storage.size(); i++)
@@ -255,6 +257,8 @@ namespace svg
                 const path_attributes& attr = m_attr_storage[i];
                 m_transform = attr.transform;
                 m_transform *= mtx;
+				m_curved_clip.set_transform(m_transform);
+
                 double scl = m_transform.scale();
                 //m_curved.approximation_method(curve_inc);
                 m_curved.approximation_scale(scl);
@@ -340,6 +344,7 @@ namespace svg
 
         curved                       m_curved;
         curved_count                 m_curved_count;
+		curved_cliped                m_curved_clip;
 
         curved_stroked               m_curved_stroked;
         curved_stroked_trans         m_curved_stroked_trans;

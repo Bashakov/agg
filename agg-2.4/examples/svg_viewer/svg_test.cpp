@@ -215,6 +215,32 @@ public:
     }
 };
 
+int agg_main1(int argc, char* argv[])
+{
+	agg::rect_d cb(0, 0, 10, 10);
+	agg::trans_affine tr;
+	//tr *= agg::trans_affine_translation(4, 0);
+	
+	typedef agg::vertex_sl_clip<double> Cliper;
+	Cliper cliper;
+
+	cliper.clip_box(cb);
+	cliper.set_transform(tr);
+	cliper.move_to(11.0, 1.0);
+	cliper.line_to(11.0, 2.0);
+	
+	double x = 1.0;
+	double y = 1.0;
+	unsigned  cmd = 0;
+
+	while( cliper.get_cmd(&x, &y, &cmd) )
+	{
+		;
+	}
+	
+	return 1;
+	
+}
 
 int agg_main(int argc, char* argv[])
 {

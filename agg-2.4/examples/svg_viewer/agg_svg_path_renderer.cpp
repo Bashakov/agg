@@ -38,14 +38,15 @@ conv_marker Ч добавл€ет маркеры
     path_renderer::path_renderer() :
         m_curved(m_storage),
         m_curved_count(m_curved),
+		m_curved_clip(m_curved_count),
 
-        m_curved_stroked(m_curved_count),
+        m_curved_stroked(m_curved_clip),
         m_curved_stroked_trans(m_curved_stroked, m_transform),
 
-        m_curved_trans(m_curved_count, m_transform),
+        m_curved_trans(m_curved_clip, m_transform),
         m_curved_trans_contour(m_curved_trans),
 
-		m_curved_dash(m_curved_count),
+		m_curved_dash(m_curved_clip),
 		m_curved_dash_stroked(m_curved_dash),
 		m_curved_dash_stroked_trans(m_curved_dash_stroked, m_transform)
     {
