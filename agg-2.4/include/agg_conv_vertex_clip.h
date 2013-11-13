@@ -171,6 +171,7 @@ namespace agg
 		typedef agg::vertex_sl_clip<coord_type>	Cliper;
 		typedef typename Cliper::point			point;
 
+		void operator = (const conv_vertex_clip & rh) {}
 	public:
 		conv_vertex_clip(VertexSource& vs) : m_source(vs), m_bClip(false), m_bNeedCloseLine(false), m_bPrevVisible(false), m_bFirstPiece(false) {}
 

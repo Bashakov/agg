@@ -41,6 +41,7 @@ namespace svg
 	// vertexes transmitted transparent, without modification
     template<class VertexSource> class conv_count
     {
+		void operator = (const conv_count & ) {};
     public:
         conv_count(VertexSource& vs) : m_source(vs), m_count(0) {}
 
@@ -135,31 +136,27 @@ namespace svg
     class path_renderer
     {
     public:
-        typedef pod_bvector<path_attributes>   attr_storage;
-		typedef pod_bvector<dash_description>  dash_storage;
+        typedef pod_bvector<path_attributes>		attr_storage;
+		typedef pod_bvector<dash_description>		dash_storage;
 
-        typedef conv_curve<path_storage>       curved;
-        typedef conv_count<curved>             curved_count;
-		typedef conv_vertex_clip<curved_count> curved_cliped;
+        typedef conv_curve<path_storage>			curved;
+        typedef conv_count<curved>					curved_count;
+		typedef conv_vertex_clip<curved_count>		curved_cliped;
+		typedef conv_transform<curved_cliped>		curved_vertex_trans;
 
-        typedef conv_stroke<curved_cliped>     curved_stroked;
-        typedef conv_transform<curved_stroked> curved_stroked_trans;
+        typedef conv_stroke<curved_vertex_trans>	curved_stroked;
+        typedef conv_transform<curved_stroked>		curved_stroked_trans;
 
-		typedef conv_transform<curved_cliped>  curved_trans;
-        typedef conv_contour<curved_trans>     curved_trans_contour;
+		typedef conv_transform<curved_vertex_trans>	curved_trans;
+        typedef conv_contour<curved_trans>			curved_trans_contour;
 
-		typedef conv_dash<curved_cliped>       curved_dash;
-		typedef conv_stroke<curved_dash>       curved_dash_stroked;
+		typedef conv_dash<curved_vertex_trans>		curved_dash;
+		typedef conv_stroke<curved_dash>			curved_dash_stroked;
 		typedef conv_transform<curved_dash_stroked> curved_dash_stroked_trans;
 
         path_renderer();
-
         void remove_all();
 
-        // Use these functions as follows:
-        // begin_path() when the XML tag <path> comes ("start_element" handler)
-        // parse_path() on "d=" tag attribute
-        // end_path() when parsing of the entire tag is done.
         void begin_path();
         void parse_path(path_tokenizer& tok);
         void end_path();
@@ -210,29 +207,12 @@ namespace svg
         trans_affine& transform();
 		void dash(const dash_description & desc);
 
-        // Make all polygons CCW-oriented
-        void arrange_orientations()
-        {
-            m_storage.arrange_orientations_all_paths(path_flags_ccw);
-        }
+        
+        void arrange_orientations(); // Make all polygons CCW-oriented
+        void expand(double value);	// Expand all polygons 
 
-        // Expand all polygons 
-        void expand(double value)
-        {
-            m_curved_trans_contour.width(value);
-        }
-
-        unsigned operator [](unsigned idx)
-        {
-            m_transform = m_attr_storage[idx].transform;
-            return m_attr_storage[idx].index;
-        }
-
-        void bounding_rect(double* x1, double* y1, double* x2, double* y2)
-        {
-            agg::conv_transform<agg::path_storage> trans(m_storage, m_transform);
-            agg::bounding_rect(trans, *this, 0, m_attr_storage.size(), x1, y1, x2, y2);
-        }
+        unsigned operator [](unsigned idx);
+        void bounding_rect(double* x1, double* y1, double* x2, double* y2);
 
         // Rendering. One can specify two additional parameters: 
         // trans_affine and opacity. They can be used to transform the whole
@@ -243,7 +223,8 @@ namespace svg
                     Renderer& ren, 
                     const trans_affine& mtx, 
                     const rect_i& cb,
-                    double opacity=1.0)
+                    double opacity=1.0,
+					bool bRealLineWidth = false)
         {
             unsigned i;
 
@@ -255,11 +236,15 @@ namespace svg
             for(i = 0; i < m_attr_storage.size(); i++)
             {
                 const path_attributes& attr = m_attr_storage[i];
-                m_transform = attr.transform;
-                m_transform *= mtx;
-				m_curved_clip.set_transform(m_transform);
+                m_transformVertex = attr.transform;
+                m_transformVertex *= mtx;
+				m_transformStrokeWidth.reset();
+				m_curved_clip.set_transform(m_transformVertex);
+				double scl = m_transformVertex.scale();
 
-                double scl = m_transform.scale();
+				if(!bRealLineWidth)
+					std::swap(m_transformStrokeWidth, m_transformVertex);
+
                 //m_curved.approximation_method(curve_inc);
                 m_curved.approximation_scale(scl);
                 m_curved.angle_tolerance(0.0);
@@ -286,7 +271,7 @@ namespace svg
                     agg::render_scanlines(ras, sl, ren);
                 }
 
-                if( attr.stroke_flag)
+                if( attr.stroke_flag )
                 {
 					bool bDashed = attr.dash_index >= 0 && attr.dash_index <= (int)m_dashes.size();
 					if(!bDashed)
@@ -339,12 +324,14 @@ namespace svg
         path_storage   m_storage;
         attr_storage   m_attr_storage;
         attr_storage   m_attr_stack;
-        trans_affine   m_transform;
+        trans_affine   m_transformVertex;
+		trans_affine   m_transformStrokeWidth;
 		dash_storage   m_dashes;
 
         curved                       m_curved;
         curved_count                 m_curved_count;
 		curved_cliped                m_curved_clip;
+		curved_vertex_trans          m_vertex_trans;
 
         curved_stroked               m_curved_stroked;
         curved_stroked_trans         m_curved_stroked_trans;

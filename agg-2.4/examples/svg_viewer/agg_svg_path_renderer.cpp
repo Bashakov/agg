@@ -39,16 +39,17 @@ conv_marker Ч добавл€ет маркеры
         m_curved(m_storage),
         m_curved_count(m_curved),
 		m_curved_clip(m_curved_count),
+		m_vertex_trans(m_curved_clip, m_transformVertex),
 
-        m_curved_stroked(m_curved_clip),
-        m_curved_stroked_trans(m_curved_stroked, m_transform),
+        m_curved_stroked(m_vertex_trans),
+        m_curved_stroked_trans(m_curved_stroked, m_transformStrokeWidth),
 
-        m_curved_trans(m_curved_clip, m_transform),
+        m_curved_trans(m_vertex_trans, m_transformStrokeWidth),
         m_curved_trans_contour(m_curved_trans),
 
-		m_curved_dash(m_curved_clip),
+		m_curved_dash(m_vertex_trans),
 		m_curved_dash_stroked(m_curved_dash),
-		m_curved_dash_stroked_trans(m_curved_dash_stroked, m_transform)
+		m_curved_dash_stroked_trans(m_curved_dash_stroked, m_transformStrokeWidth)
     {
         m_curved_trans_contour.auto_detect_orientation(false);
     }
@@ -60,7 +61,8 @@ conv_marker Ч добавл€ет маркеры
         m_storage.remove_all();
         m_attr_storage.remove_all();
         m_attr_stack.remove_all();
-        m_transform.reset();
+        m_transformVertex.reset();
+		m_transformStrokeWidth.reset();
 		m_dashes.remove_all();
     }
 
@@ -392,6 +394,28 @@ conv_marker Ч добавл€ет маркеры
             }
         }
     }
+
+	void path_renderer::arrange_orientations()
+	{
+		m_storage.arrange_orientations_all_paths(path_flags_ccw);
+	}
+
+	void path_renderer::expand(double value)
+	{
+		m_curved_trans_contour.width(value);
+	}
+
+	unsigned path_renderer::operator [](unsigned idx)
+	{
+		m_transformStrokeWidth = m_transformVertex = m_attr_storage[idx].transform;
+		return m_attr_storage[idx].index;
+	}
+
+	void path_renderer::bounding_rect(double* x1, double* y1, double* x2, double* y2)
+	{
+		agg::conv_transform<agg::path_storage> trans(m_storage, m_transformVertex);
+		agg::bounding_rect(trans, *this, 0, m_attr_storage.size(), x1, y1, x2, y2);
+	}
 
 }
 }

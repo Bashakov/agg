@@ -684,7 +684,7 @@ namespace agg
         self_type gradient(self_type c, double k) const
         {
             self_type ret;
-            calc_type ik = uround(k * base_scale);
+            value_type ik = static_cast<value_type>(uround(k * base_scale));
             ret.v = lerp(v, c.v, ik);
             ret.a = lerp(a, c.a, ik);
             return ret;
@@ -709,8 +709,8 @@ namespace agg
             }
             else
             {
-                cv = v + mult_cover(c.v, cover);
-                ca = a + mult_cover(c.a, cover);
+                cv = v + mult_cover(c.v, static_cast<agg::cover_type>(cover));
+                ca = a + mult_cover(c.a, static_cast<agg::cover_type>(cover));
             }
             v = (value_type)((cv > calc_type(base_mask)) ? calc_type(base_mask) : cv);
             a = (value_type)((ca > calc_type(base_mask)) ? calc_type(base_mask) : ca);
@@ -839,7 +839,7 @@ namespace agg
         //--------------------------------------------------------------------
         operator rgba8() const 
         {
-            rgba8::value_type y = uround(v * 255.0);
+            rgba8::value_type y = static_cast<rgba8::value_type>(uround(v * 255.0));
             return rgba8(y, y, y, uround(a * 255.0));
         }
 
@@ -853,7 +853,7 @@ namespace agg
         //--------------------------------------------------------------------
         operator rgba16() const 
         {
-            rgba16::value_type y = uround(v * 65535.0);
+            rgba16::value_type y = static_cast<rgba16::value_type>(uround(v * 65535.0));
             return rgba16(y, y, y, uround(a * 65535.0));
         }
 
